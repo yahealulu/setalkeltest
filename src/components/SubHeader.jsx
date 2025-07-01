@@ -15,7 +15,7 @@ const SubHeader = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center h-[80px] gap-6">
           <div className="p-4 ">
-            <Link href="#">
+            <Link href="/">
               <img src="/images/logo_black_and_gold.png" alt="Sel alkel logo" className="w-20" /></Link>
           </div>
           {/* All Categories Button */}
