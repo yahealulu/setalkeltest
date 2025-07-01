@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* @import 'leaflet/dist/leaflet.css'; */
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  padding: 0 0;
+  background: white;
+
+  /* background: linear-gradient(to bottom, #040614 50%, #0f2147 50%); */
+  font-family: "Open Sans", sans-serif;
+}
+@layer base {
+   
+  ::-webkit-scrollbar {
+       width: 8px;
+     }
+   
+     ::-webkit-scrollbar-track {
+       @apply bg-secondary; 
+     }
+   
+     ::-webkit-scrollbar-thumb {
+       @apply bg-primary/85 rounded-full; 
+     }
+   
+     * {
+       scrollbar-width: thin; 
+       scrollbar-color: var(--primary) var(--secondary); 
+     }
+   }
