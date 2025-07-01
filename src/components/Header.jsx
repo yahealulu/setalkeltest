@@ -18,9 +18,6 @@ const Header = () => {
       setUser(JSON.parse(storedUser));
     }
   }, []);
-useEffect(() => {
-  console.log("Header sees user:", user);
-}, [user]);
 
   const handleLogout = async () => {
     const token = localStorage.getItem('token');
