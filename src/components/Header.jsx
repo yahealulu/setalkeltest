@@ -5,32 +5,16 @@ import Link from 'next/link';
 import { MapPin, Phone, Heart, User, Search, ShoppingCart, ChevronDown } from 'lucide-react';
 import SubHeader from './SubHeader';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 const Header = () => {
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  const { user, logout } = useContext(AuthContext);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
   const handleLogout = async () => {
-    const token = localStorage.getItem('token');
     try {
-      await fetch('https://setalkel.amjadshbib.com/api/logout', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      setUser(null);
+      await logout();
       router.push('/');
     } catch (error) {
       console.error('Logout failed:', error);

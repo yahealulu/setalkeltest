@@ -1,20 +1,21 @@
 'use client';
+
 import { createContext, useEffect, useState } from 'react';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true); 
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+    setIsAuthLoading(false); 
   }, []);
-useEffect(() => {
-  console.log("AuthContext → user:", user);
-}, [user]);
+
   const login = (userData, token) => {
     localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('token', token);
@@ -23,12 +24,16 @@ useEffect(() => {
 
   const logout = async () => {
     const token = localStorage.getItem('token');
-    await fetch('https://setalkel.amjadshbib.com/api/logout', {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      await fetch('https://setalkel.amjadshbib.com/api/logout', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
 
     localStorage.removeItem('user');
     localStorage.removeItem('token');
@@ -36,7 +41,7 @@ useEffect(() => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthLoading }}>
       {children}
     </AuthContext.Provider>
   );

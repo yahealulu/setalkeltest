@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 /* @import 'leaflet/dist/leaflet.css'; */
+@import 'react-toastify/dist/ReactToastify.css';
 
 html {
   scroll-behavior: smooth;

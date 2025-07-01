@@ -4,13 +4,11 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import localFont from "next/font/local";
-import Header from "@/components/Header";
 import Providers from "@/components/Providers";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Footer from "@/components/Footer";
 import { OrderProvider } from '@/context/OrderContext';
-import { ToastContainer, toast } from 'react-toastify';
-import { AuthProvider } from '@/context/AuthContext'; 
+import { ToastContainer } from 'react-toastify';
+import { AuthProvider } from '@/context/AuthContext';
+import LayoutWrapper from "@/components/LayoutWrapper"; 
 const tajawal = localFont({
   src: [
     {
@@ -53,10 +51,9 @@ export default async function LocaleLayout({ children, params }) {
         <OrderProvider>
           <NextIntlClientProvider messages={messages}>
             <Providers>
-              <Header />
-              <ToastContainer />
-              {children}
-              <Footer />
+              <LayoutWrapper>
+                {children}
+              </LayoutWrapper>
             </Providers>
           </NextIntlClientProvider>
         </OrderProvider>
