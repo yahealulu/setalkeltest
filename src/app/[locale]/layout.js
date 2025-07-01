@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Footer from "@/components/Footer";
 import { OrderProvider } from '@/context/OrderContext';
 import { ToastContainer, toast } from 'react-toastify';
+import { AuthProvider } from '@/context/AuthContext'; 
 const tajawal = localFont({
   src: [
     {
@@ -48,6 +49,7 @@ export default async function LocaleLayout({ children, params }) {
   return (
     <html>
       <body className={`${tajawal.className} relative`}>
+        <AuthProvider> 
         <OrderProvider>
           <NextIntlClientProvider messages={messages}>
             <Providers>
@@ -58,6 +60,7 @@ export default async function LocaleLayout({ children, params }) {
             </Providers>
           </NextIntlClientProvider>
         </OrderProvider>
+        </AuthProvider>
       </body>
     </html>
   );
