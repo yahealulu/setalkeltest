@@ -114,7 +114,7 @@ const ProductVariantsPage = ({ params }) => {
     const { data: product, isLoading, error } = useQuery({
         queryKey: ['product', resolvedParams.id],
         queryFn: async () => {
-            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}products/${resolvedParams.id}`);
+            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/products/${resolvedParams.id}`);
             return data?.data;
         }
     });
@@ -122,7 +122,7 @@ const ProductVariantsPage = ({ params }) => {
     const { data: variants } = useQuery({
         queryKey: ['variants', resolvedParams.id],
         queryFn: async () => {
-            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}products/${resolvedParams.id}/variants`);
+            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/products/${resolvedParams.id}/variants`);
             return data?.data;
         },
         enabled: !!product
@@ -291,7 +291,7 @@ const ProductVariantsPage = ({ params }) => {
                         <div className="flex items-center gap-6 mb-8">
                             <div className="relative h-32 w-32">
                                 <Image
-                                    src={`${process.env.NEXT_PUBLIC_Img}/${product.image}`}
+                                    src={`https://setalkel.amjadshbib.com/public/${product.image}`}
                                     alt={product.name_translations?.en}
                                     fill
                                     className="object-contain"
@@ -318,7 +318,7 @@ const ProductVariantsPage = ({ params }) => {
                                             <div className="flex gap-4">
                                                 <div className="relative w-24 h-24 rounded-lg overflow-hidden bg-gray-50">
                                                     <Image
-                                                        src={`${process.env.NEXT_PUBLIC_Img}/${variant.image}`}
+                                                        src={`https://setalkel.amjadshbib.com/public/${variant.image}`}
                                                         alt={variant.size}
                                                         fill
                                                         className="object-contain"
@@ -411,4 +411,4 @@ const ProductVariantsPage = ({ params }) => {
     );
 };
 
-export default ProductVariantsPage; 
+export default ProductVariantsPage;

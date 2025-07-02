@@ -10,7 +10,7 @@ const VariantPage = ({ params }) => {
     const { data: variant, isLoading, error } = useQuery({
         queryKey: ['variant', resolvedParams.product, resolvedParams.variant],
         queryFn: async () => {
-            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}products/${resolvedParams.product}/variants/${resolvedParams.variant}`);
+            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/products/${resolvedParams.product}/variants/${resolvedParams.variant}`);
             return data?.data;
         }
     });
@@ -53,7 +53,7 @@ const VariantPage = ({ params }) => {
                 <div className="space-y-6">
                     <div className="relative h-[500px] w-[400px] mx-auto rounded-2xl overflow-hidden">
                         <Image
-                            src={`${process.env.NEXT_PUBLIC_Img}/${variant.image}`}
+                            src={`https://setalkel.amjadshbib.com/public/${variant.image}`}
                             alt={variant.size}
                             fill
                             className="object-contain"

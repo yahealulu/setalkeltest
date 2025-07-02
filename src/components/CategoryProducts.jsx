@@ -14,7 +14,7 @@ const CategoryProducts = () => {
     const { data: categories, isLoading, error } = useQuery({
         queryKey: ['get-categories'],
         queryFn: async () => {
-            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}categories`);
+            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/categories`);
             return data?.data;
         },
     });

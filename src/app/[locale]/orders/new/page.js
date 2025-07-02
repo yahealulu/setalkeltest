@@ -221,7 +221,7 @@ const OrderProductSelection = ({ onOrderComplete }) => {
     const { data: categories, isLoading, error } = useQuery({
         queryKey: ['get-categories'],
         queryFn: async () => {
-            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}countries/${orderData.country_id}/categories`);
+            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/countries/${orderData.country_id}/categories`);
             return data?.data;
         },
     });
@@ -340,7 +340,7 @@ return (
                                     <div className="bg-white rounded-2xl overflow-hidden shadow-lg">
                                         <div className="relative h-48">
                                             <Image
-                                                src={`${process.env.NEXT_PUBLIC_Img}/${product.image}`}
+                                                src={`https://setalkel.amjadshbib.com/public/${product.image}`}
                                                 alt={product.name_translations?.en}
                                                 fill
                                             />
@@ -388,7 +388,7 @@ export default function NewOrder() {
     const { data: countries } = useQuery({
         queryKey: ['countries'],
         queryFn: async () => {
-            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}countries`);
+            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/countries`);
             return data?.data;
         }
     });
@@ -421,4 +421,4 @@ export default function NewOrder() {
             )}
         </div>
     );
-} 
+}

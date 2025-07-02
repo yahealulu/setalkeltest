@@ -17,7 +17,7 @@ const ProductPage = ({ params }) => {
     const { data: product, isLoading, error } = useQuery({
         queryKey: ['product', resolvedParams.product],
         queryFn: async () => {
-            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}products`);
+            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/products`);
             return data?.data;
         }
     });
@@ -25,7 +25,7 @@ const ProductPage = ({ params }) => {
     const { data: variants } = useQuery({
         queryKey: ['variants', resolvedParams.product],
         queryFn: async () => {
-            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}products/${resolvedParams.product}/variants`);
+            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/products/${resolvedParams.product}/variants`);
             console.log(data);
             return data?.data;
         },
@@ -91,7 +91,7 @@ const ProductPage = ({ params }) => {
                 <div className="space-y-6">
                     <div className="relative h-[500px] bg-gray-50 rounded-2xl overflow-hidden">
                         <Image
-                            src={`${process.env.NEXT_PUBLIC_Img}/${product.image}`}
+                            src={`https://setalkel.amjadshbib.com/public/${product.image}`}
                             alt={product.name_translations?.en || 'Product'}
                             fill
                             className="object-contain"
@@ -145,7 +145,7 @@ const ProductPage = ({ params }) => {
                                     <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
                                         <div className="relative h-48 ">
                                             <Image
-                                                src={`${process.env.NEXT_PUBLIC_Img}/${variant.image}`}
+                                                src={`https://setalkel.amjadshbib.com/public/${variant.image}`}
                                                 alt={`${product.name_translations?.en} - ${variant.size}`}
                                                 fill
                                                 className=""

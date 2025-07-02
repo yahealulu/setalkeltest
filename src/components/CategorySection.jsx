@@ -52,7 +52,7 @@ const CategorySection = ({ category, selectedVariants, setSelectedVariants, hove
                             {/* Product Image */}
                             <div className="relative h-48">
                                 <Image
-                                    src={`${process.env.NEXT_PUBLIC_Img}/${product.image}`}
+                                    src={`https://setalkel.amjadshbib.com/public/${product.image}`}
                                     alt={product.name_translations?.en}
                                     fill
                                     className="object-contain"
@@ -151,4 +151,4 @@ const CategorySection = ({ category, selectedVariants, setSelectedVariants, hove
     );
 };
 
-export default CategorySection; 
+export default CategorySection;

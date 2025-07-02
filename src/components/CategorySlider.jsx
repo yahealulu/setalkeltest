@@ -95,7 +95,7 @@ const CategorySlider = () => {
     const { data: categories, error , isLoading } = useQuery({
         queryKey: ['get-categories'],
         queryFn: async () => {
-            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}categories`);
+            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/categories`);
             return data?.data;
         },
     });
@@ -183,7 +183,7 @@ const CategorySlider = () => {
                                     transition={{ duration: 0.3 }}
                                 >
                                     <Image
-                                        src={`${process.env.NEXT_PUBLIC_Img}${category.image}`}
+                                        src={`https://setalkel.amjadshbib.com/public${category.image}`}
                                         alt={category.name_translations?.en || 'Category'}
                                         fill
                                         className="object-cover rounded-xl"
@@ -229,4 +229,4 @@ const CategorySlider = () => {
     );
 };
 
-export default CategorySlider; 
+export default CategorySlider;

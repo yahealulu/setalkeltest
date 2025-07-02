@@ -43,7 +43,7 @@ const ProductCard = ({ product, setHoveredId, hoveredId }) => {
                         transition={{ duration: 0.3 }}
                     >
                         <Image
-                            src={`${process.env.NEXT_PUBLIC_Img}/${product.image}`}
+                            src={`https://setalkel.amjadshbib.com/public/${product.image}`}
                             alt={product.name_translations?.en || 'Product'}
                             fill
                             className="object-cover"
