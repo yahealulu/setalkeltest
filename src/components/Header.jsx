@@ -15,7 +15,10 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       await logout();
+      // Always redirect to home page after logout
       router.push('/');
+      // Close the dropdown
+      setIsDropdownOpen(false);
     } catch (error) {
       console.error('Logout failed:', error);
     }

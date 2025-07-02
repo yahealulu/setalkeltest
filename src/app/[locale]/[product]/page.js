@@ -17,7 +17,7 @@ const ProductPage = ({ params }) => {
     const { data: product, isLoading, error } = useQuery({
         queryKey: ['product', resolvedParams.product],
         queryFn: async () => {
-            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}products/${resolvedParams.product}`);
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}products`);
             return data?.data;
         }
     });
@@ -26,6 +26,7 @@ const ProductPage = ({ params }) => {
         queryKey: ['variants', resolvedParams.product],
         queryFn: async () => {
             const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}products/${resolvedParams.product}/variants`);
+            console.log(data);
             return data?.data;
         },
     });
@@ -64,6 +65,8 @@ const ProductPage = ({ params }) => {
     }
 
     if (error) {
+        console.log(error);
+        
         return (
             <div className="container mx-auto px-4 py-8">
                 <div className="bg-red-50 text-red-600 p-4 rounded-lg">

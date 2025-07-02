@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { toast } from 'react-toastify'
@@ -11,7 +11,14 @@ export default function Login() {
     const router = useRouter()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const { login } = useContext(AuthContext)
+    const { login, user, isAuthLoading } = useContext(AuthContext)
+    
+    // Redirect if user is already logged in
+    useEffect(() => {
+        if (!isAuthLoading && user) {
+            router.push('/')
+        }
+    }, [user, isAuthLoading, router])
     
     const loginMutation = useMutation({
         mutationFn: async (credentials) => {

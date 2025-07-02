@@ -198,7 +198,6 @@ const CategorySlider = () => {
                                 >
                                     {category.name_translations?.en}
                                 </motion.h3>
-                              
                                 
                             </div>
                         </div>
