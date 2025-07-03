@@ -98,7 +98,6 @@ const VariantPage = ({ params }) => {
                             </span>
                         )}
                     </div>
-
                     {/* Detailed Information */}
                     <div className="grid grid-cols-2 gap-6">
                         {/* Packaging Information */}
