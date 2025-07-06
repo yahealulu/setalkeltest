@@ -74,7 +74,7 @@ const SubHeader = () => {
 
           {/* Cart Icon */}
           <Link
-            href="/cart"
+            href="/orders/new"
             className="w-10 h-10 rounded-full bg-[#E6F5E7] flex items-center justify-center transition-colors"
           >
             <div className="relative cursor-pointer" onClick={() => router.push("/orders/new")}>
