@@ -13,13 +13,16 @@ const CountriesSection = () => {
         queryKey: ['get-countries'],
         queryFn: async () => {
             const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/countries`);
+            console.log(data);
             return data?.data;
         },
     });
-    
+
     const containerRef = useRef(null);
     const progressRef = useRef(null);
     const x = useMotionValue(0);
+
+    const [isHovered, setIsHovered] = useState(false);
 
     const updateProgressBar = (scrollLeft) => {
         if (!containerRef.current || !progressRef.current) return;
@@ -40,6 +43,28 @@ const CountriesSection = () => {
             return () => container.removeEventListener('scroll', handleScroll);
         }
     }, []);
+
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        let animationFrame;
+
+        const autoScroll = () => {
+            const speed = isHovered ? 0.15 : 0.99; // ✅ سرعة 150% أعلى من الأصل
+            container.scrollLeft += speed;
+
+            if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 1) {
+                container.scrollLeft = 0;
+            }
+
+            animationFrame = requestAnimationFrame(autoScroll);
+        };
+
+        animationFrame = requestAnimationFrame(autoScroll);
+
+        return () => cancelAnimationFrame(animationFrame);
+    }, [isHovered]);
 
     if (isLoading) {
         return (
@@ -80,11 +105,13 @@ const CountriesSection = () => {
 
             <div
                 ref={containerRef}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
                 className="flex overflow-x-auto hide-scrollbar gap-6 relative mb-4"
                 style={{
                     scrollBehavior: 'smooth',
                     scrollSnapType: 'x mandatory',
-                    WebkitOverflowScrolling: 'touch'
+                    WebkitOverflowScrolling: 'touch',
                 }}
             >
                 {countries.map((country) => (
@@ -109,8 +136,7 @@ const CountriesSection = () => {
                                 />
                                 <h3 className="text-xl font-semibold capitalize">{country.name}</h3>
                             </div>
-                            
-                            {/* Categories and Products Count */}
+
                             <div className="flex gap-4 mb-4 text-sm text-gray-600">
                                 <div className="flex items-center gap-1">
                                     <span className="font-medium">{country.categories_count}</span>
@@ -121,8 +147,7 @@ const CountriesSection = () => {
                                     <span>Products</span>
                                 </div>
                             </div>
-                            
-                            {/* Transport Methods */}
+
                             <div className="flex gap-3 mb-6">
                                 {country.air && (
                                     <div className="flex items-center gap-2 bg-blue-50 text-blue-600 px-3 py-2 rounded-lg">
@@ -144,7 +169,6 @@ const CountriesSection = () => {
                                 )}
                             </div>
 
-                            {/* Container Sizes */}
                             <div className="space-y-4">
                                 {country.air && country?.air_allowed_sizes?.length > 0 && (
                                     <div>
@@ -218,7 +242,7 @@ const CountriesSection = () => {
                 <motion.div
                     className="absolute left-0 h-full w-[100px] bg-green-500 rounded-full"
                     style={{ x }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />
             </div>
 
@@ -256,4 +280,4 @@ const CountriesSection = () => {
     );
 };
 
-export default CountriesSection; 
+export default CountriesSection;
