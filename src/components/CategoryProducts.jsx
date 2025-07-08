@@ -96,7 +96,7 @@ const CategoryCard = ({ category }) => {
                     transition={{ duration: 0.3 }}
                 >
                     <Image
-                        src={`https://setalkel.amjadshbib.com${category.image}`}
+                        src={`https://setalkel.amjadshbib.com/public/${category.image}`}
                         alt={category.name_translations?.en || 'Category'}
                         fill
                         className="object-cover"
@@ -170,7 +170,7 @@ const CategoryProductsSection = ({ category }) => {
             >
                 {category.products.map((product) => (
                     <Link
-                        href={`/${params?.locale || 'en'}/${product.product_code}`}
+                        href={`/${params?.locale || 'en'}/${product.id}`}
                         key={product.id}
                         className="block"
                     >

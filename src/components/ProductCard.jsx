@@ -37,10 +37,13 @@ const ProductCard = ({ product }) => {
                     transition={{ duration: 0.3 }}
                 >
                     <Image
-                        src={`https://setalkel.amjadshbib.com/${product.image}`}
+                        src={product.image ? `https://setalkel.amjadshbib.com/public/${product.image}` : '/placeholder-product.jpg'}
                         alt={product.name_translations?.en || 'Product'}
                         fill
                         className="object-cover"
+                        onError={(e) => {
+                            e.target.src = '/placeholder-product.jpg';
+                        }}
                     />
                 </motion.div>
             </div>

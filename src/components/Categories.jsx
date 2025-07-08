@@ -6,9 +6,11 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 
 const Categories = () => {
   const params = useParams();
+  const [showAll, setShowAll] = useState(false);
   const { data: categoriesData, isLoading, error } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
@@ -62,12 +64,15 @@ const Categories = () => {
     );
   }
 
+  // Determine which categories to display based on showAll state
+  const displayCategories = showAll ? categories : categories.slice(0, 4);
+
   return (
     <section className="py-12">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl font-semibold mb-6">Categories</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 md:gap-6">
-          {categories.map((category) => (
+          {displayCategories.map((category) => (
             <Link
                 key={category.id}
                 href={`/${params?.locale || 'en'}/category/${category.id}`}
@@ -89,6 +94,20 @@ const Categories = () => {
             </Link>
           ))}
         </div>
+        
+        {/* Show More / Show Less Button */}
+        {categories.length > 4 && (
+          <div className="flex justify-center mt-8">
+            <motion.button
+              onClick={() => setShowAll(!showAll)}
+              className="px-6 py-2 bg-[#00B207] text-white rounded-full hover:bg-[#009706] transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {showAll ? 'Show Less' : 'Show More'}
+            </motion.button>
+          </div>
+        )}
       </div>
     </section>
   );

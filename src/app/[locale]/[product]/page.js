@@ -91,7 +91,7 @@ const ProductPage = ({ params }) => {
                 <div className="space-y-6">
                     <div className="relative h-[500px] bg-gray-50 rounded-2xl overflow-hidden">
                         <Image
-                            src={`https://setalkel.amjadshbib.com/${product.image}`}
+                            src={`https://setalkel.amjadshbib.com/public/${product.image}`}
                             alt={product.name_translations?.en || 'Product'}
                             fill
                             className="object-contain"

@@ -53,7 +53,7 @@ const VariantPage = ({ params }) => {
                 <div className="space-y-6">
                     <div className="relative h-[500px] w-[400px] mx-auto rounded-2xl overflow-hidden">
                         <Image
-                            src={`https://setalkel.amjadshbib.com/${variant.image}`}
+                            src={variant.image?`https://setalkel.amjadshbib.com/public/${variant.image}`:null}
                             alt={variant.size}
                             fill
                             className="object-contain"

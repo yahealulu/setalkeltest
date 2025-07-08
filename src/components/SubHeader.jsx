@@ -8,7 +8,23 @@ import { useRouter } from 'next/navigation';
 const SubHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const router = useRouter()
+  const router = useRouter();
+  
+  const handleSearch = (e) => {
+    // Prevent default form submission behavior
+    e.preventDefault();
+    
+    // Only search if query is not empty
+    if (searchQuery.trim()) {
+      router.push(`/${router.locale || 'en'}/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+  
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch(e);
+    }
+  }
 
   return (
     <div className="border-b border-gray-200 bg-[#F9F9F9]">
@@ -36,18 +52,27 @@ const SubHeader = () => {
 
           {/* Search Bar */}
           <div className="flex-1">
-            <div className="relative max-w-2xl">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for products"
-                className="w-full bg-white h-[35px] pl-12 pr-4 rounded-2xl w-[250px] border border-gray-200 focus:outline-none focus:border-[#00B207]"
-              />
-              <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                <Search className="w-5 h-5 text-gray-400" />
+            <form onSubmit={handleSearch} className="relative max-w-2xl flex">
+              <div className="relative flex-grow">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Search for products"
+                  className="w-full bg-white h-[35px] pl-12 pr-4 rounded-l-2xl border border-gray-200 focus:outline-none focus:border-[#00B207]"
+                />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                  <Search className="w-5 h-5 text-gray-400" />
+                </div>
               </div>
-            </div>
+              <button 
+                type="submit" 
+                className="h-[35px] bg-[#00B207] text-white px-4 rounded-r-2xl hover:bg-[#009706] transition-colors"
+              >
+                Search
+              </button>
+            </form>
           </div>
 
           {/* Additional Links */}
@@ -90,4 +115,4 @@ const SubHeader = () => {
   );
 };
 
-export default SubHeader; 
+export default SubHeader;

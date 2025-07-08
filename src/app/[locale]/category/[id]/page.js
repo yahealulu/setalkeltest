@@ -99,7 +99,7 @@ const CategoryPage = ({ params }) => {
             {/* Category Banner */}
             <div className="relative h-[300px] w-full rounded-2xl overflow-hidden mb-8">
                 <Image
-                    src={`https://setalkel.amjadshbib.com${category.image}`}
+                    src={`https://setalkel.amjadshbib.com/public/${category.image}`}
                     alt={category.name_translations?.en || 'Category'}
                     fill
                     className="object-cover"
