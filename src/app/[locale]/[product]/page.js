@@ -3,7 +3,7 @@
 import { use, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingCart, Truck, Plane, Ship, Calendar, Box, Globe, Tag, Barcode, Package } from 'lucide-react';
+import { Calendar, Box, Globe, Tag, Barcode, Package, Scale } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { motion, useMotionValue } from 'framer-motion';
 import axios from 'axios';
@@ -17,7 +17,7 @@ const ProductPage = ({ params }) => {
     const { data: product, isLoading, error } = useQuery({
         queryKey: ['product', resolvedParams.product],
         queryFn: async () => {
-            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/products`);
+            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/products/${resolvedParams.product}`);
             return data?.data;
         }
     });
@@ -70,7 +70,7 @@ const ProductPage = ({ params }) => {
         return (
             <div className="container mx-auto px-4 py-8">
                 <div className="bg-red-50 text-red-600 p-4 rounded-lg">
-                    Failed to load product
+                    Failed to load product details
                 </div>
             </div>
         );
@@ -91,11 +91,21 @@ const ProductPage = ({ params }) => {
                 <div className="space-y-6">
                     <div className="relative h-[500px] bg-gray-50 rounded-2xl overflow-hidden">
                         <Image
-                            src={`https://setalkel.amjadshbib.com/public/${product.image}`}
+                            src={`https://setalkel.amjadshbib.com/${product.image}`}
                             alt={product.name_translations?.en || 'Product'}
                             fill
                             className="object-contain"
                         />
+                        {product.is_new && (
+                            <span className="absolute top-0 left-0 bg-green-500 text-white px-3 py-1 rounded-tl-2xl text-sm">
+                                New
+                            </span>
+                        )}
+                        {product.is_hidden && (
+                            <span className="absolute top-0 right-0 bg-yellow-500 text-white px-3 py-1 rounded-tr-2xl text-sm">
+                                Hidden
+                            </span>
+                        )}
                     </div>
                 </div>
 
@@ -117,15 +127,33 @@ const ProductPage = ({ params }) => {
                     </div>
 
                     <div className="flex flex-wrap gap-4">
-                        {!product.in_stock && (
-                            <span className="bg-red-100 text-red-600 px-4 py-2 rounded-full text-sm font-medium">Out of Stock</span>
-                        )}
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${product.in_stock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                            {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                        </span>
                         {product.is_new && (
                             <span className="bg-green-100 text-green-600 px-4 py-2 rounded-full text-sm font-medium">New Product</span>
                         )}
                         {product.is_hidden && (
                             <span className="bg-yellow-100 text-yellow-600 px-4 py-2 rounded-full text-sm font-medium">Hidden Product</span>
                         )}
+                    </div>
+                    
+                    {/* Timestamps */}
+                    <div className="space-y-4">
+                        <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+                            <Calendar className="w-5 h-5" />
+                            Dates
+                        </h2>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <span className="text-gray-500">Created:</span>
+                                <p className="font-medium">{new Date(product.created_at).toLocaleDateString()}</p>
+                            </div>
+                            <div>
+                                <span className="text-gray-500">Last Updated:</span>
+                                <p className="font-medium">{new Date(product.updated_at).toLocaleDateString()}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -135,7 +163,7 @@ const ProductPage = ({ params }) => {
                 <div className="mt-12">
                     <h2 className="text-2xl font-semibold mb-6">Available Variants</h2>
                     <div className="relative">
-                        <div ref={containerRef} className="grid grid-cols-5 gap-6 overflow-x-auto hide-scrollbar" style={{ scrollBehavior: 'smooth', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
+                        <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 overflow-x-auto hide-scrollbar" style={{ scrollBehavior: 'smooth', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
                             {variants.map((variant) => (
                                 <Link 
                                     href={`/${resolvedParams.locale}/${resolvedParams.product}/${variant.id}`} 
@@ -145,10 +173,10 @@ const ProductPage = ({ params }) => {
                                     <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
                                         <div className="relative h-48 ">
                                             <Image
-                                                src={`https://setalkel.amjadshbib.com/public/${variant.image}`}
+                                                src={`https://setalkel.amjadshbib.com/${variant.image}`}
                                                 alt={`${product.name_translations?.en} - ${variant.size}`}
                                                 fill
-                                                className=""
+                                                className="object-contain"
                                             />
                                             {variant.is_new && (
                                                 <span className="absolute top-0 left-0 bg-green-500 text-white px-2 py-1 rounded-tl-2xl text-xs">New</span>
@@ -177,10 +205,9 @@ const ProductPage = ({ params }) => {
                                                     <p className="font-medium">{variant.gross_weight} kg</p>
                                                 </div>
                                             </div>
-                                            <button className={`w-full py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-medium transition-colors duration-200 ${variant.in_stock ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`} disabled={!variant.in_stock}>
-                                                <ShoppingCart className="w-4 h-4" />
-                                                {variant.in_stock ? 'Add to Cart' : 'Out of Stock'}
-                                            </button>
+                                            <div className="flex items-center justify-center py-2 px-4 rounded-lg text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white transition-colors duration-200">
+                                                View Details
+                                            </div>
                                         </div>
                                     </div>
                                 </Link>

@@ -37,7 +37,7 @@ const ProductCard = ({ product }) => {
                     transition={{ duration: 0.3 }}
                 >
                     <Image
-                        src={`https://setalkel.amjadshbib.com/public/${product.image}`}
+                        src={`https://setalkel.amjadshbib.com/${product.image}`}
                         alt={product.name_translations?.en || 'Product'}
                         fill
                         className="object-cover"

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, useMotionValue } from 'framer-motion';
-import { Plane, Ship, Truck } from 'lucide-react';
+import { Plane, Ship, Truck, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import ReactFlagsSelect from 'react-flags-select';
@@ -13,7 +13,6 @@ const CountriesSection = () => {
         queryKey: ['get-countries'],
         queryFn: async () => {
             const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/countries`);
-            console.log(data);
             return data?.data;
         },
     });
@@ -21,8 +20,9 @@ const CountriesSection = () => {
     const containerRef = useRef(null);
     const progressRef = useRef(null);
     const x = useMotionValue(0);
-
     const [isHovered, setIsHovered] = useState(false);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(false);
 
     const updateProgressBar = (scrollLeft) => {
         if (!containerRef.current || !progressRef.current) return;
@@ -31,17 +31,31 @@ const CountriesSection = () => {
         x.set(-progress);
     };
 
+    const updateScrollButtons = () => {
+        const el = containerRef.current;
+        if (!el) return;
+        setCanScrollLeft(el.scrollLeft > 0);
+        setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+    };
+
     const handleScroll = (e) => {
         const scrollLeft = e.target.scrollLeft;
         updateProgressBar(scrollLeft);
+        updateScrollButtons();
+    };
+
+    const scrollByAmount = (amount) => {
+        if (containerRef.current) {
+            containerRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+        }
     };
 
     useEffect(() => {
         const container = containerRef.current;
-        if (container) {
-            container.addEventListener('scroll', handleScroll);
-            return () => container.removeEventListener('scroll', handleScroll);
-        }
+        if (!container) return;
+        updateScrollButtons();
+        container.addEventListener('scroll', handleScroll);
+        return () => container.removeEventListener('scroll', handleScroll);
     }, []);
 
     useEffect(() => {
@@ -51,58 +65,52 @@ const CountriesSection = () => {
         let animationFrame;
 
         const autoScroll = () => {
-            const speed = isHovered ? 0.15 : 0.99; // ✅ سرعة 150% أعلى من الأصل
+            const speed = isHovered ? 0.15 : 0.75; // سرعة 150% أسرع
             container.scrollLeft += speed;
 
             if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 1) {
                 container.scrollLeft = 0;
             }
 
+            updateScrollButtons();
             animationFrame = requestAnimationFrame(autoScroll);
         };
 
         animationFrame = requestAnimationFrame(autoScroll);
-
         return () => cancelAnimationFrame(animationFrame);
     }, [isHovered]);
 
     if (isLoading) {
-        return (
-            <div className="px-8 py-8">
-                <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-6" />
-                <div className="flex gap-6">
-                    {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="animate-pulse bg-gray-200 rounded-2xl p-6 w-[calc(25%-18px)] h-[280px]" />
-                    ))}
-                </div>
-            </div>
-        );
+        return <div className="px-8 py-8">Loading...</div>;
     }
 
     if (error) {
-        return (
-            <div className="px-8 py-8">
-                <h2 className="text-2xl font-semibold mb-6">Our Shipping Countries</h2>
-                <div className="bg-red-50 text-red-600 p-4 rounded-lg">
-                    Error loading shipping countries. Please try again later.
-                </div>
-            </div>
-        );
-    }
-
-    if (!countries || countries.length === 0) {
-        return (
-            <div className="px-8 py-8">
-                <h2 className="text-2xl font-semibold mb-6">Our Shipping Countries</h2>
-                <div className="text-gray-500">No countries found</div>
-            </div>
-        );
+        return <div className="px-8 py-8 text-red-600">Error loading countries.</div>;
     }
 
     return (
-        <div className="px-8 py-8">
+        <div className="relative px-8 py-8">
             <h2 className="text-2xl font-semibold mb-6">Our Shipping Countries</h2>
 
+            {/* Arrows */}
+            {canScrollLeft && (
+                <button
+                    onClick={() => scrollByAmount(-300)}
+                    className="absolute left-4 top-[50%] -translate-y-1/2 z-10 bg-white shadow-md p-2 rounded-full hover:scale-110 transition-all border border-gray-200"
+                >
+                    <ChevronLeft className="w-5 h-5 text-gray-700" />
+                </button>
+            )}
+            {canScrollRight && (
+                <button
+                    onClick={() => scrollByAmount(300)}
+                    className="absolute right-4 top-[50%] -translate-y-1/2 z-10 bg-white shadow-md p-2 rounded-full hover:scale-110 transition-all border border-gray-200"
+                >
+                    <ChevronRight className="w-5 h-5 text-gray-700" />
+                </button>
+            )}
+
+            {/* Scrollable Container */}
             <div
                 ref={containerRef}
                 onMouseEnter={() => setIsHovered(true)}
@@ -128,15 +136,11 @@ const CountriesSection = () => {
                                     selected={country.code.toUpperCase()}
                                     showSelectedLabel={false}
                                     showOptionLabel={false}
-                                    showSecondarySelectedLabel={false}
-                                    showSecondaryOptionLabel={false}
-                                    selectedSize={25}
                                     disabled
                                     className="!p-0 !w-auto !border-none menu-flags"
                                 />
                                 <h3 className="text-xl font-semibold capitalize">{country.name}</h3>
                             </div>
-
                             <div className="flex gap-4 mb-4 text-sm text-gray-600">
                                 <div className="flex items-center gap-1">
                                     <span className="font-medium">{country.categories_count}</span>
@@ -147,7 +151,6 @@ const CountriesSection = () => {
                                     <span>Products</span>
                                 </div>
                             </div>
-
                             <div className="flex gap-3 mb-6">
                                 {country.air && (
                                     <div className="flex items-center gap-2 bg-blue-50 text-blue-600 px-3 py-2 rounded-lg">
@@ -168,73 +171,12 @@ const CountriesSection = () => {
                                     </div>
                                 )}
                             </div>
-
-                            <div className="space-y-4">
-                                {country.air && country?.air_allowed_sizes?.length > 0 && (
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-600 mb-2">Air Shipping Sizes:</h4>
-                                        <div className="flex flex-wrap gap-2">
-                                            {country?.air_allowed_sizes?.map((size, index) => (
-                                                <span
-                                                    key={index}
-                                                    className={`text-xs px-2 py-1 rounded ${
-                                                        size.freezed
-                                                            ? 'bg-red-50 text-red-600'
-                                                            : 'bg-blue-50 text-blue-600'
-                                                    }`}
-                                                >
-                                                    {size.size}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {country.sea && country.sea_allowed_sizes?.length > 0 && (
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-600 mb-2">Sea Shipping Sizes:</h4>
-                                        <div className="flex flex-wrap gap-2">
-                                            {country.sea_allowed_sizes?.map((size, index) => (
-                                                <span
-                                                    key={index}
-                                                    className={`text-xs px-2 py-1 rounded ${
-                                                        size.freezed
-                                                            ? 'bg-red-50 text-red-600'
-                                                            : 'bg-green-50 text-green-600'
-                                                    }`}
-                                                >
-                                                    {size.size}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {country.land && country.land_allowed_sizes?.length > 0 && (
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-600 mb-2">Land Shipping Sizes:</h4>
-                                        <div className="flex flex-wrap gap-2">
-                                            {country.land_allowed_sizes?.map((size, index) => (
-                                                <span
-                                                    key={index}
-                                                    className={`text-xs px-2 py-1 rounded ${
-                                                        size.freezed
-                                                            ? 'bg-red-50 text-red-600'
-                                                            : 'bg-orange-50 text-orange-600'
-                                                    }`}
-                                                >
-                                                    {size.size}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
                         </div>
                     </motion.div>
                 ))}
             </div>
 
+            {/* Progress bar */}
             <div
                 ref={progressRef}
                 className="relative h-1 bg-gray-200 rounded-full mt-6 w-full"

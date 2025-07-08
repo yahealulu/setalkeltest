@@ -53,7 +53,7 @@ const VariantPage = ({ params }) => {
                 <div className="space-y-6">
                     <div className="relative h-[500px] w-[400px] mx-auto rounded-2xl overflow-hidden">
                         <Image
-                            src={`https://setalkel.amjadshbib.com/public/${variant.image}`}
+                            src={`https://setalkel.amjadshbib.com/${variant.image}`}
                             alt={variant.size}
                             fill
                             className="object-contain"
@@ -181,17 +181,7 @@ const VariantPage = ({ params }) => {
                         </div>
                     </div>
 
-                    {/* Add to Cart Button */}
-                    <button
-                        className={`w-full py-3 px-6 rounded-lg flex items-center justify-center gap-2 text-base font-medium transition-colors duration-200 ${variant.in_stock
-                            ? 'bg-green-500 hover:bg-green-600 text-white'
-                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            }`}
-                        disabled={!variant.in_stock}
-                    >
-                        <ShoppingCart className="w-5 h-5" />
-                        {variant.in_stock ? 'Add to Cart' : 'Out of Stock'}
-                    </button>
+                   
                 </div>
             </div>
         </div>

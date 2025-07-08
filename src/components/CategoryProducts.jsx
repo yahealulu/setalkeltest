@@ -6,12 +6,12 @@ import Link from 'next/link';
 import { motion, useAnimation, useMotionValue } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { ShoppingCart } from 'lucide-react';
-import Barcode from 'react-barcode';
 import ProductCard from './ProductCard';
+import { useParams } from 'next/navigation';
 
 const CategoryProducts = () => {
-    const { data: categories, isLoading, error } = useQuery({
+    const params = useParams();
+    const { data: categoriesData, isLoading, error } = useQuery({
         queryKey: ['get-categories'],
         queryFn: async () => {
             const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/categories`);
@@ -21,51 +21,110 @@ const CategoryProducts = () => {
 
     if (isLoading) {
         return (
-            <div className="space-y-8">
-                {[1, 2].map((categoryIndex) => (
-                    <div key={categoryIndex} className="px-8 py-8">
-                        <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-6" />
-                        <div className="flex gap-6">
-                            {[1, 2, 3, 4].map((i) => (
-                                <div key={i} className="animate-pulse bg-gray-200 rounded-2xl p-6 w-[calc(25%-18px)] h-[200px]" />
-                            ))}
-                        </div>
+            <section className="py-12">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-2xl font-semibold mb-6">Categories</h2>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 md:gap-6">
+                        {[...Array(8)].map((_, i) => (
+                            <div key={i} className="animate-pulse bg-gray-200 rounded-2xl p-6 h-[200px]" />
+                        ))}
                     </div>
-                ))}
-            </div>
+                </div>
+            </section>
         );
     }
 
     if (error) {
         return (
-            <div className="px-8 py-8">
-                <div className="text-red-500">Error loading categories and products</div>
-            </div>
+            <section className="py-12">
+                <div className="container mx-auto px-4">
+                    <div className="text-red-500">Error loading categories</div>
+                </div>
+            </section>
         );
     }
 
-    if (!categories || categories.length === 0) {
+    // Filter out hidden categories
+    const categories = categoriesData
+        ? categoriesData.filter(category => !category.is_hidden)
+        : [];
+
+    if (categories.length === 0) {
         return (
-            <div className="px-8 py-8">
-                <div className="text-gray-500">No categories found</div>
-            </div>
+            <section className="py-12">
+                <div className="container mx-auto px-4">
+                    <div className="text-gray-500">No categories found</div>
+                </div>
+            </section>
         );
     }
 
     return (
-        <div className="">
-            {categories.map((category) => (
-                <CategorySection key={category.id} category={category} />
-            ))}
-        </div>
+        <section className="py-12">
+            <div className="container mx-auto px-4">
+                <h2 className="text-2xl font-semibold mb-6">Featured Categories</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 md:gap-6">
+                    {categories.map((category) => (
+                        <Link
+                            href={`/${params?.locale || 'en'}/category/${category.id}`}
+                            key={category.id}
+                            className="block"
+                        >
+                            <CategoryCard category={category} />
+                        </Link>
+                    ))}
+                </div>
+            </div>
+        </section>
     );
 };
 
-const CategorySection = ({ category }) => {
+// CategoryCard component to display category information
+const CategoryCard = ({ category }) => {
+    return (
+        <motion.div
+            className="shadow-lg w-full relative bg-white mb-2 rounded-2xl overflow-hidden group h-[200px]"
+            style={{ width: 'calc(100% - 8px)' }}
+            whileHover={{ scale: 1.03, y: -5 }}
+            transition={{ duration: 0.3 }}
+        >
+            {/* Image Section */}
+            <div className="relative w-full h-32 bg-gray-50">
+                <motion.div
+                    className="absolute inset-0"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    <Image
+                        src={`https://setalkel.amjadshbib.com${category.image}`}
+                        alt={category.name_translations?.en || 'Category'}
+                        fill
+                        className="object-cover"
+                    />
+                </motion.div>
+            </div>
+
+            {/* Content Section */}
+            <div className="px-4 py-3 flex flex-col justify-center items-center">
+                <motion.h3
+                    className="text-lg font-semibold text-gray-800 text-center"
+                    whileHover={{ x: 5 }}
+                    transition={{ duration: 0.2 }}
+                >
+                    {category.name_translations?.en}
+                </motion.h3>
+            </div>
+        </motion.div>
+    );
+};
+
+// This component is for displaying products in a category page
+const CategoryProductsSection = ({ category }) => {
     const [hoveredId, setHoveredId] = useState(null);
     const containerRef = useRef(null);
     const progressRef = useRef(null);
     const x = useMotionValue(0);
+    const params = useParams();
 
     const updateProgressBar = (scrollLeft) => {
         if (!containerRef.current || !progressRef.current) return;
@@ -102,7 +161,7 @@ const CategorySection = ({ category }) => {
 
             <div
                 ref={containerRef}
-                className="grid grid-cols-5  w-full overflow-x-auto hide-scrollbar gap-6 relative mb-4"
+                className="grid grid-cols-5 w-full overflow-x-auto hide-scrollbar gap-6 relative mb-4"
                 style={{
                     scrollBehavior: 'smooth',
                     scrollSnapType: 'x mandatory',
@@ -111,12 +170,11 @@ const CategorySection = ({ category }) => {
             >
                 {category.products.map((product) => (
                     <Link
-                        href={`/${product.id}`}
+                        href={`/${params?.locale || 'en'}/${product.product_code}`}
                         key={product.id}
                         className="block"
                     >
-                        <ProductCard product={product} setHoveredId={setHoveredId} hoveredId={hoveredId} />
-
+                        <ProductCard product={product} />
                     </Link>
                 ))}
             </div>
@@ -147,3 +205,4 @@ const CategorySection = ({ category }) => {
 };
 
 export default CategoryProducts;
+export { CategoryProductsSection };
