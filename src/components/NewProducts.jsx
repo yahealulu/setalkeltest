@@ -8,8 +8,9 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useParams } from 'next/navigation';
 
-const CategorySlider = () => {
+const NewProducts = () => {
   const params = useParams();
+  const [showAll, setShowAll] = useState(false);
 
   const { data: newProducts, error, isLoading } = useQuery({
     queryKey: ['get-new-products'],
@@ -50,12 +51,14 @@ const CategorySlider = () => {
     );
   }
 
+  const displayProducts = showAll ? newProducts : newProducts.slice(0, 4);
+
   return (
     <div className="px-8 py-8">
       <h2 className="text-2xl font-semibold mb-6">New Products</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {newProducts.map((product) => (
+        {displayProducts.map((product) => (
           <Link
             key={product.id}
             href={`/${params?.locale || 'en'}/${product.product_id}/${product.id}`}
@@ -66,7 +69,6 @@ const CategorySlider = () => {
               transition={{ duration: 0.3 }}
             >
               <div className="relative h-full flex flex-col">
-                {/* New Badge */}
                 {product.is_new && (
                   <div className="absolute top-0 left-0 z-20">
                     <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-br-lg shadow-md">
@@ -75,7 +77,6 @@ const CategorySlider = () => {
                   </div>
                 )}
 
-                {/* Out of Stock Badge */}
                 {!product.in_stock && (
                   <div className="absolute top-0 right-0 z-20">
                     <div className="bg-red-500 text-white text-xs py-1 px-2 rounded-bl-lg shadow-md">
@@ -125,8 +126,22 @@ const CategorySlider = () => {
           </Link>
         ))}
       </div>
+
+      {/* Show More / Show Less Button */}
+      {newProducts.length > 4 && (
+        <div className="flex justify-center mt-8">
+          <motion.button
+            onClick={() => setShowAll(!showAll)}
+            className="px-6 py-2 bg-[#00B207] text-white rounded-full hover:bg-[#009706] transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {showAll ? 'Show Less' : 'Show More'}
+          </motion.button>
+        </div>
+      )}
     </div>
   );
 };
 
-export default CategorySlider;
+export default NewProducts;

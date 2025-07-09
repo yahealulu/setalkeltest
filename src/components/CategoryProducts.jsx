@@ -192,7 +192,7 @@ const CategoryProductsSection = ({ category }) => {
             </div>
 
             <style jsx global>{`
-                .hide-scrollbar {
+                .hide-scrollbar {~
                     -ms-overflow-style: none;
                     scrollbar-width: none;
                 }

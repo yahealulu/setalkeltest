@@ -11,6 +11,7 @@ import { motion } from 'framer-motion';
 const Categories = () => {
   const params = useParams();
   const [showAll, setShowAll] = useState(false);
+
   const { data: categoriesData, isLoading, error } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
@@ -18,8 +19,7 @@ const Categories = () => {
       return data?.data;
     },
   });
-  
-  // Show loading state
+
   if (isLoading) {
     return (
       <section className="py-12">
@@ -36,8 +36,7 @@ const Categories = () => {
       </section>
     );
   }
-  
-  // Show error state
+
   if (error) {
     return (
       <section className="py-12">
@@ -47,13 +46,11 @@ const Categories = () => {
       </section>
     );
   }
-  
-  // Filter out hidden categories but show all of them
+
   const categories = categoriesData
-    ? categoriesData.filter(category => !category.is_hidden)
+    ? categoriesData.filter(category => !category.is_hidden && category.products_count > 0)
     : [];
 
-  // If no categories found
   if (!categories || categories.length === 0) {
     return (
       <section className="py-12">
@@ -64,8 +61,7 @@ const Categories = () => {
     );
   }
 
-  // Determine which categories to display based on showAll state
-  const displayCategories = showAll ? categories : categories.slice(0, 4);
+  const displayCategories = showAll ? categories : categories.slice(0, 6);
 
   return (
     <section className="py-12">
@@ -74,11 +70,17 @@ const Categories = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 md:gap-6">
           {displayCategories.map((category) => (
             <Link
-                key={category.id}
-                href={`/${params?.locale || 'en'}/category/${category.id}`}
-                className="flex flex-col items-center group"
-              >
-              <div className="w-24 h-24 rounded-full flex items-center justify-center mb-4 overflow-hidden bg-gray-50">
+              key={category.id}
+              href={`/${params?.locale || 'en'}/category/${category.id}`}
+              className="flex flex-col items-center group relative"
+            >
+              <div className="w-24 h-24 rounded-full flex items-center justify-center mb-4 overflow-hidden bg-gray-50 relative">
+                {/* Red badge for product count */}
+                {category.products_count > 0 && (
+                  <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full z-10">
+                    {category.products_count} 
+                  </span>
+                )}
                 <div className="relative w-24 h-24 rounded-full">
                   <Image
                     src={`https://setalkel.amjadshbib.com/public/${category.image}`}
@@ -94,9 +96,9 @@ const Categories = () => {
             </Link>
           ))}
         </div>
-        
+
         {/* Show More / Show Less Button */}
-        {categories.length > 4 && (
+        {categories.length > 6 && (
           <div className="flex justify-center mt-8">
             <motion.button
               onClick={() => setShowAll(!showAll)}

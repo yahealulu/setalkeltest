@@ -1,7 +1,7 @@
 'use client';
 
 import Categories from '@/components/Categories';
-import CategorySlider from '@/components/CategorySlider';
+import NewProducts from '@/components/NewProducts';
 import HeroSection from '@/components/HeroSection';
 import CategoryProducts from '@/components/CategoryProducts';
 import CountriesSection from '@/components/CountriesSection';
@@ -16,8 +16,7 @@ export default function Home() {
       <Banners />
       <CountriesSection/>
       <Categories />
-      <CategorySlider />
-      <CategoryProducts />
+      <NewProducts />
     </main>
   );
 } 

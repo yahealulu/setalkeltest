@@ -137,24 +137,7 @@ const ProductPage = ({ params }) => {
                             <span className="bg-yellow-100 text-yellow-600 px-4 py-2 rounded-full text-sm font-medium">Hidden Product</span>
                         )}
                     </div>
-                    
-                    {/* Timestamps */}
-                    <div className="space-y-4">
-                        <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                            <Calendar className="w-5 h-5" />
-                            Dates
-                        </h2>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <span className="text-gray-500">Created:</span>
-                                <p className="font-medium">{new Date(product.created_at).toLocaleDateString()}</p>
-                            </div>
-                            <div>
-                                <span className="text-gray-500">Last Updated:</span>
-                                <p className="font-medium">{new Date(product.updated_at).toLocaleDateString()}</p>
-                            </div>
-                        </div>
-                    </div>
+                 
                 </div>
             </div>
 

@@ -162,23 +162,7 @@ const VariantPage = ({ params }) => {
                             </div>
                         </div>
 
-                        {/* Timestamps */}
-                        <div className="space-y-4">
-                            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                                <Calendar className="w-5 h-5" />
-                                Dates
-                            </h2>
-                            <div className="space-y-2">
-                                <div>
-                                    <span className="text-gray-500">Created:</span>
-                                    <p className="font-medium">{new Date(variant.created_at).toLocaleDateString()}</p>
-                                </div>
-                                <div>
-                                    <span className="text-gray-500">Last Updated:</span>
-                                    <p className="font-medium">{new Date(variant.updated_at).toLocaleDateString()}</p>
-                                </div>
-                            </div>
-                        </div>
+                        
                     </div>
 
                    
