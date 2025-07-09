@@ -7,6 +7,7 @@ import Footer from './Footer';
 import LoadingScreen from './LoadingScreen';
 import { ToastContainer } from 'react-toastify';
 import { usePathname, useRouter } from 'next/navigation';
+import ProtectedRoute from './Auth/ProtectedRoute';
 
 export default function LayoutWrapper({ children }) {
   const { isAuthLoading, user } = useContext(AuthContext);
@@ -27,7 +28,9 @@ export default function LayoutWrapper({ children }) {
     <>
       <Header />
       <ToastContainer />
-      {children}
+      <ProtectedRoute>
+        {children}
+      </ProtectedRoute>
       <Footer />
     </>
   );
