@@ -78,22 +78,22 @@ const SubHeader = () => {
           {/* Additional Links */}
           <div className="flex items-center gap-6">
             <Link
-              href="/promotions"
+              href="/offers"
               className="flex items-center gap-2 text-gray-600 hover:text-[#00B207] transition-colors"
             >
-              <span className="text-md">Promotions</span>
+              <span className="text-md">Offers</span>
             </Link>
             <Link
-              href="/breakfast"
+              href="/activites"
               className="flex items-center gap-2 text-gray-600 hover:text-[#00B207] transition-colors"
             >
-              <span className="text-md">Ideas For Breakfast</span>
+              <span className="text-md">Activites</span>
             </Link>
             <Link
-              href="/weekly-discounts"
+              href="/bites"
               className="flex items-center gap-2 text-gray-600 hover:text-[#00B207] transition-colors"
             >
-              <span className="text-md">Weekly Discounts</span>
+              <span className="text-md">SetAllel Bites </span>
             </Link>
           </div>
 
