@@ -1,424 +1,454 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useQuery, useMutation } from '@tanstack/react-query'
-import axios from 'axios'
-import { motion, useMotionValue } from 'framer-motion';
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { ShoppingCart } from 'lucide-react'
-import CategorySection from '@/components/CategorySection'
-import { useOrder } from '@/context/OrderContext'
-import toast, { Toaster } from 'react-hot-toast'
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plane, Ship, Truck, Package, Thermometer, CheckCircle } from 'lucide-react';
+import ReactFlagsSelect from 'react-flags-select';
+import { useRouter } from '@/i18n/routing';
+import { useOrder } from '@/context/OrderContext';
 
-// Step Components
-const ContainerStep = ({ onChange, countries }) => {
-    const { orderData } = useOrder();
-    const selectedCountry = countries?.find(country => country.id === orderData.country_id);
+// Container capacity data
+const CONTAINER_CAPACITIES = {
+  '20 cpm': { volume: 33, weight: 18000, freezed: { volume: 28, weight: 15000 } },
+  '40 cpm': { volume: 67, weight: 26000, freezed: { volume: 58, weight: 22000 } },
+  '40 hq': { volume: 76, weight: 26000, freezed: { volume: 75, weight: 23000 } }
+};
 
-    // Container specifications mapping
-    const containerSpecs = {
-        '20 cpm': {
-            maxWeight: 28000,
-            volume: 33,
-            freezedMaxWeight: 25000,
-            freezedVolume: 30
-        },
-        '40 cpm': {
-            maxWeight: 26000,
-            volume: 67,
-            freezedMaxWeight: 24000,
-            freezedVolume: 65
-        },
-        '40 hq': {
-            maxWeight: 25000,
-            volume: 76,
-            freezedMaxWeight: 23000,
-            freezedVolume: 75
-        }
-    };
+const NewOrderPage = () => {
+  const router = useRouter();
+  const { updateContainerSettings } = useOrder();
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [selectedTransportType, setSelectedTransportType] = useState('');
+  const [selectedContainerSize, setSelectedContainerSize] = useState('');
+  const [selectedContainerType, setSelectedContainerType] = useState(''); // 'regular' or 'freezed'
+  const [currentStep, setCurrentStep] = useState(1);
 
-    // Get available transportation types
-    const availableTypes = selectedCountry ? 
-        Object.entries({
-            land: selectedCountry.land,
-            sea: selectedCountry.sea,
-            air: selectedCountry.air
-        }).filter(([_, isAvailable]) => isAvailable).map(([type]) => type) 
-        : [];
+  // Fetch export countries
+  const { data: countriesData, isLoading, error } = useQuery({
+    queryKey: ['export-countries'],
+    queryFn: async () => {
+      const { data } = await axios.get('https://setalkel.amjadshbib.com/api/countries?type=export');
+      return data?.data || [];
+    },
+  });
 
-    // Get allowed sizes based on selected type
-    const getAllowedSizes = () => {
-        if (!selectedCountry || !orderData.container_standard?.type) return [];
-        
-        const sizeMap = {
-            land: selectedCountry.land_allowed_sizes,
-            sea: selectedCountry.sea_allowed_sizes,
-            air: selectedCountry.air_allowed_sizes
-        };
-        
-        return sizeMap[orderData.container_standard.type] || [];
-    };
+  const selectedCountryData = countriesData?.find(country => country.code === selectedCountry);
+  
+  // Get container options for the selected transport type
+  const availableSizes = selectedTransportType && selectedCountryData 
+    ? selectedCountryData[`${selectedTransportType}_allowed_sizes`] || []
+    : [];
 
-    const allowedSizes = getAllowedSizes();
+  // Group containers by size and track which types are available
+  const containerOptions = availableSizes.reduce((acc, current) => {
+    const existingSize = acc.find(item => item.size === current.size);
+    if (!existingSize) {
+      acc.push({
+        size: current.size,
+        regular: !current.freezed,
+        freezed: current.freezed
+      });
+    } else {
+      if (current.freezed) {
+        existingSize.freezed = true;
+      } else {
+        existingSize.regular = true;
+      }
+    }
+    return acc;
+  }, []);
 
-    // Reset size and freezed when type changes
-    const handleTypeChange = (type) => {
-        onChange({
-            container_standard: {
-                ...orderData.container_standard,
-                type,
-                size: '',
-                freezed: false
-            },
-            total_weight: 0,
-            total_volume: 0
-        });
-    };
+  const selectedSizeData = containerOptions.find(size => size.size === selectedContainerSize);
+  const capacity = selectedContainerSize ? CONTAINER_CAPACITIES[selectedContainerSize] : null;
+  const actualCapacity = capacity && selectedContainerType === 'freezed' && capacity.freezed ? capacity.freezed : capacity;
 
-    // Update freezed status and container specs based on selected size
-    const handleSizeChange = (size) => {
-        const selectedSizeConfig = allowedSizes.find(s => s.size === size);
-        const specs = containerSpecs[size.split(' (')[0]]; // Remove (freezed) from size if present
-        
-        if (specs) {
-            const isFreezed = selectedSizeConfig?.freezed || false;
-            onChange({
-                container_standard: {
-                    ...orderData.container_standard,
-                    size,
-                    freezed: isFreezed
-                },
-                total_weight: isFreezed ? specs.freezedMaxWeight : specs.maxWeight,
-                total_volume: isFreezed ? specs.freezedVolume : specs.volume
-            });
-        }
-    };
+  const handleCountryChange = (countryCode) => {
+    setSelectedCountry(countryCode);
+    setSelectedTransportType('');
+    setSelectedContainerSize('');
+    setSelectedContainerType('');
+    setCurrentStep(2);
+  };
 
+  const handleTransportTypeChange = (type) => {
+    setSelectedTransportType(type);
+    setSelectedContainerSize('');
+    setSelectedContainerType('');
+    setCurrentStep(3);
+  };
+
+  const handleContainerSelection = (size, type) => {
+    setSelectedContainerSize(size);
+    setSelectedContainerType(type);
+    setCurrentStep(4);
+  };
+
+  const canProceed = selectedCountry && selectedTransportType && selectedContainerSize && selectedContainerType;
+
+  if (isLoading) {
     return (
-        <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Container Information</h2>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
 
-            {/* Country Selection - Always visible */}
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Destination Country</label>
-                <select
-                    value={orderData.country_id || ''}
-                    onChange={(e) => onChange({ country_id: parseInt(e.target.value) })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                >
-                    <option value="">Select a country</option>
-                    {countries?.map((country) => (
-                        <option key={country.id} value={country.id}>
-                            {country.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            {/* Show rest of the form only if country is selected */}
-            {selectedCountry && (
-                <>
-                    {/* Container Details */}
-                    {/* <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Box Count</label>
-                            <input
-                                type="number"
-                                value={orderData.box_count}
-                                onChange={(e) => onChange({ box_count: parseInt(e.target.value) })}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Total Weight (kg)</label>
-                            <input
-                                type="number"
-                                value={orderData.total_weight}
-                                onChange={(e) => onChange({ total_weight: parseFloat(e.target.value) })}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Total Volume (m³)</label>
-                            <input
-                                type="number"
-                                value={orderData.total_volume}
-                                onChange={(e) => onChange({ total_volume: parseFloat(e.target.value) })}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Total Price</label>
-                            <input
-                                type="number"
-                                value={orderData.total_price}
-                                onChange={(e) => onChange({ total_price: parseFloat(e.target.value) })}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                            />
-                        </div>
-                    </div> */}
-
-                    {/* Container Standard */}
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-medium">Container Specifications</h3>
-                        <div className="space-y-4">
-                            {/* Transportation Type */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
-                                <div className="space-x-4">
-                                    {availableTypes.map((type) => (
-                                        <label key={type} className="inline-flex items-center">
-                                            <input
-                                                type="radio"
-                                                name="transportationType"
-                                                value={type}
-                                                checked={orderData.container_standard?.type === type}
-                                                onChange={(e) => handleTypeChange(e.target.value)}
-                                                className="rounded-full border-gray-300 text-green-600 shadow-sm focus:border-green-500 focus:ring-green-500"
-                                            />
-                                            <span className="ml-2 capitalize">{type}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Container Size */}
-                            {orderData.container_standard?.type && (
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Size</label>
-                                    <select
-                                        value={orderData.container_standard?.size || ''}
-                                        onChange={(e) => handleSizeChange(e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                                    >
-                                        <option value="">Select a size</option>
-                                        {allowedSizes.map((sizeConfig) => (
-                                            <option key={sizeConfig.size} value={sizeConfig.size}>
-                                                {sizeConfig.size}{sizeConfig.freezed ? ' (Freezed)' : ''}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </>
-            )}
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-2xl shadow-xl">
+          <div className="text-red-600 text-xl font-semibold">Failed to load countries</div>
         </div>
-    )
-}
+      </div>
+    );
+  }
 
-// OrderProductSelection Component
-const OrderProductSelection = ({ onOrderComplete }) => {
-    const router = useRouter();
-    const { orderData } = useOrder();
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">Create New Order</h1>
+          <p className="text-gray-600 text-lg">Configure your shipping preferences step by step</p>
+        </motion.div>
 
-    const { data: categories, isLoading, error } = useQuery({
-        queryKey: ['get-categories'],
-        queryFn: async () => {
-            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/countries/${orderData.country_id}/categories`);
-            return data?.data;
-        },
-    });
+        {/* Progress Steps */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex justify-center mb-12"
+        >
+          <div className="flex items-center space-x-4">
+            {[1, 2, 3].map((step) => (
+              <div key={step} className="flex items-center">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
+                  currentStep >= step 
+                    ? 'bg-indigo-600 text-white shadow-lg' 
+                    : 'bg-gray-200 text-gray-500'
+                }`}>
+                  {currentStep > step ? <CheckCircle className="w-6 h-6" /> : step}
+                </div>
+                {step < 3 && (
+                  <div className={`w-16 h-1 mx-2 transition-all duration-300 ${
+                    currentStep > step ? 'bg-indigo-600' : 'bg-gray-200'
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
+        </motion.div>
 
-    // Function to check if product can be added to container
-    const canAddToContainer = (product) => {
-        if (!product) return false;
-        
-        const isProductFrozen = product.material_property === "frozen";
-        const isContainerFrozen = orderData.container_standard?.freezed;
-
-        return (isProductFrozen && isContainerFrozen) || (!isProductFrozen && !isContainerFrozen);
-    };
-
-    // Function to handle product click
-    const handleProductClick = (e, product) => {
-        e.preventDefault();
-        
-        if (!canAddToContainer(product)) {
-            const isProductFrozen = product.material_property === "frozen";
-            const message = isProductFrozen 
-                ? "لا يمكن إضافة منتج مجمد إلى حاوية غير مجمدة. الرجاء اختيار منتج آخر."
-                : "لا يمكن إضافة منتج غير مجمد إلى حاوية مجمدة. الرجاء اختيار منتج آخر.";
+        <div className="max-w-4xl mx-auto">
+          {/* Step 1: Country Selection */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="bg-white rounded-3xl shadow-xl p-8 mb-8"
+          >
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+              <span className="bg-indigo-100 text-indigo-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">1</span>
+              Select Export Country
+            </h2>
             
-            toast.error(message, {
-                duration: 4000,
-                position: 'top-center',
-            });
-            return;
-        }
-
-        // If validation passes, navigate to product variants page
-        router.push(`/orders/new/product/${product.id}`);
-    };
-
-    // Create order mutation
-    const createOrderMutation = useMutation({
-        mutationFn: async () => {
-            const { data } = await axios.post(`https://setalkel.amjadshbib.com/api/orders`, {
-                containers: [{
-                    ...orderData
-                }]
-            })
-    return data
-},
-    onSuccess: () => {
-        alert('Order created successfully!')
-            onOrderComplete?.()
-        }
-    })
-
-if (isLoading) {
-    return (
-        <div className="space-y-8">
-            {[1, 2].map((categoryIndex) => (
-                <div key={categoryIndex} className="px-8 py-8">
-                    <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-6" />
-                    <div className="flex gap-6">
-                        {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="animate-pulse bg-gray-200 rounded-2xl p-6 w-[calc(25%-18px)] h-[200px]" />
-                        ))}
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
-}
-
-if (error) {
-    return (
-        <div className="px-8 py-8">
-            <div className="text-red-500">Error loading categories and products</div>
-        </div>
-    );
-}
-
-return (
-    <div className="relative min-h-screen pb-20">
-        {/* Selected Variants Summary */}
-        {orderData.product_ids.length > 0 && (
-            <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t z-50">
-                <div className="container mx-auto px-4 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <span className="font-medium">Selected Variants: {orderData.product_ids.length}</span>
-                        </div>
-                        <button
-                            onClick={() => createOrderMutation.mutate()}
-                            disabled={createOrderMutation.isPending}
-                            className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 disabled:opacity-50"
-                        >
-                            {createOrderMutation.isPending ? 'Creating Order...' : 'Create Order'}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        )}
-
-        {/* Categories and Products */}
-        <div className="">
-            {categories?.map((category) => (
-                <div key={category.id} className="px-8 py-8">
-                    <h2 className="text-2xl font-semibold mb-6">{category.name_translations?.en}</h2>
-                    <div className="grid grid-cols-5 gap-6">
-                        {category.products?.map((product) => {
-                            const isProductFrozen = product.material_property === "frozen";
-                            const isContainerFrozen = orderData.container_standard?.freezed;
-                            const containerMismatch = (isProductFrozen && !isContainerFrozen) || (!isProductFrozen && isContainerFrozen);
-
-                            return (
-                                <div
-                                    key={product.id}
-                                    onClick={(e) => handleProductClick(e, product)}
-                                    className={`cursor-pointer ${containerMismatch ? 'opacity-50' : ''}`}
-                                >
-                                    <div className="bg-white rounded-2xl overflow-hidden shadow-lg">
-                                        <div className="relative h-48">
-                                            <Image
-                                                src={`https://setalkel.amjadshbib.com/public/${product.image}`}
-                                                alt={product.name_translations?.en}
-                                                fill
-                                            />
-                                            {product.is_new && (
-                                                <div className="absolute top-0 left-0 bg-green-500 text-white px-2 py-1 text-xs rounded-br">
-                                                    New
-                                                </div>
-                                            )}
-                                            {isProductFrozen && (
-                                                <div className="absolute top-0 right-0 bg-blue-500 text-white px-2 py-1 text-xs rounded-bl">
-                                                    Frozen
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="p-4">
-                                            <h3 className="text-lg font-semibold mb-2">
-                                                {product.name_translations?.en}
-                                            </h3>
-                                            {containerMismatch && (
-                                                <div className="mt-2 text-sm text-red-600">
-                                                    {isProductFrozen 
-                                                        ? "يتطلب حاوية مجمدة"
-                                                        : "الحاوية مجمدة - اختر منتج مجمد"}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            ))}
-        </div>
-        <Toaster />
-    </div>
-);
-}
-
-// Main Component
-export default function NewOrder() {
-    const [step, setStep] = useState(1);
-    const { orderData, updateOrderData, resetOrder } = useOrder();
-
-    const { data: countries } = useQuery({
-        queryKey: ['countries'],
-        queryFn: async () => {
-            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/countries`);
-            return data?.data;
-        }
-    });
-
-    return (
-        <div className="container mx-auto px-4 py-8">
-            {step === 1 ? (
-                <div className="max-w-3xl mx-auto">
-                    <ContainerStep
-                        onChange={updateOrderData}
-                        countries={countries}
-                    />
-                    <div className="mt-8">
-                        <button
-                            onClick={() => setStep(2)}
-                            disabled={!orderData.country_id}
-                            className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-                        >
-                            Continue to Product Selection
-                        </button>
-                    </div>
-                </div>
-            ) : (
-                <OrderProductSelection
-                    onOrderComplete={() => {
-                        setStep(1);
-                        resetOrder();
-                    }}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Choose the country you want to import from:
+              </label>
+              <div className="relative">
+                <ReactFlagsSelect
+                  countries={countriesData?.map(country => country.code) || []}
+                  customLabels={countriesData?.reduce((acc, country) => {
+                    acc[country.code] = country.name;
+                    return acc;
+                  }, {}) || {}}
+                  selected={selectedCountry}
+                  onSelect={handleCountryChange}
+                  placeholder="Select a country"
+                  className="w-full"
+                  selectButtonClassName="!border-2 !border-gray-300 !rounded-xl !p-4 !text-left hover:!border-indigo-500 transition-all duration-200"
+                  menuClassName="!rounded-xl !shadow-xl !border-0 !mt-2"
                 />
+              </div>
+            </div>
+
+            {selectedCountryData && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gray-50 rounded-xl p-6"
+              >
+                <h3 className="font-semibold text-gray-800 mb-4">Available Transport Methods:</h3>
+                <div className="flex space-x-4">
+                  <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+                    selectedCountryData.air ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-400'
+                  }`}>
+                    <Plane className="w-5 h-5" />
+                    <span>Air</span>
+                  </div>
+                  <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+                    selectedCountryData.sea ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-400'
+                  }`}>
+                    <Ship className="w-5 h-5" />
+                    <span>Sea</span>
+                  </div>
+                  <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+                    selectedCountryData.land ? 'bg-orange-100 text-orange-700' : 'bg-gray-200 text-gray-400'
+                  }`}>
+                    <Truck className="w-5 h-5" />
+                    <span>Land</span>
+                  </div>
+                </div>
+              </motion.div>
             )}
+          </motion.div>
+
+          {/* Step 2: Transport Type Selection */}
+          <AnimatePresence>
+            {selectedCountryData && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="bg-white rounded-3xl shadow-xl p-8 mb-8"
+              >
+                <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                  <span className="bg-indigo-100 text-indigo-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">2</span>
+                  Select Transport Type
+                </h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {[
+                    { type: 'air', icon: Plane, label: 'Air Transport', color: 'blue' },
+                    { type: 'sea', icon: Ship, label: 'Sea Transport', color: 'green' },
+                    { type: 'land', icon: Truck, label: 'Land Transport', color: 'orange' }
+                  ].map(({ type, icon: Icon, label, color }) => {
+                    const isAvailable = selectedCountryData[type];
+                    const isSelected = selectedTransportType === type;
+                    
+                    return (
+                      <motion.button
+                        key={type}
+                        whileHover={isAvailable ? { scale: 1.05 } : {}}
+                        whileTap={isAvailable ? { scale: 0.95 } : {}}
+                        onClick={() => isAvailable && handleTransportTypeChange(type)}
+                        disabled={!isAvailable}
+                        className={`p-6 rounded-xl border-2 transition-all duration-200 ${
+                          isSelected
+                            ? `border-${color}-500 bg-${color}-50 shadow-lg`
+                            : isAvailable
+                            ? `border-gray-200 hover:border-${color}-300 hover:bg-${color}-25`
+                            : 'border-gray-200 bg-gray-100 cursor-not-allowed opacity-50'
+                        }`}
+                      >
+                        <Icon className={`w-8 h-8 mx-auto mb-3 ${
+                          isSelected ? `text-${color}-600` : isAvailable ? 'text-gray-600' : 'text-gray-400'
+                        }`} />
+                        <div className={`font-semibold ${
+                          isSelected ? `text-${color}-700` : isAvailable ? 'text-gray-700' : 'text-gray-400'
+                        }`}>
+                          {label}
+                        </div>
+                        {!isAvailable && (
+                          <div className="text-xs text-gray-400 mt-1">Not Available</div>
+                        )}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Step 3: Container Size Selection */}
+          <AnimatePresence>
+            {selectedTransportType && containerOptions.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="bg-white rounded-3xl shadow-xl p-8 mb-8"
+              >
+                <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                  <span className="bg-indigo-100 text-indigo-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">3</span>
+                  Select Container Type & Size
+                </h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {containerOptions.map((sizeOption) => {
+                    const capacity = CONTAINER_CAPACITIES[sizeOption.size];
+                    
+                    return (
+                      <div key={sizeOption.size} className="space-y-3">
+                        {/* Regular Container - Only show if available */}
+                        {sizeOption.regular && (
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => handleContainerSelection(sizeOption.size, 'regular')}
+                            className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left ${
+                              selectedContainerSize === sizeOption.size && selectedContainerType === 'regular'
+                                ? 'border-green-500 bg-green-50 shadow-lg'
+                                : 'border-gray-200 hover:border-green-300 hover:bg-green-25'
+                            }`}
+                          >
+                            <div className="flex items-center mb-2">
+                              <Package className={`w-5 h-5 mr-2 ${
+                                selectedContainerSize === sizeOption.size && selectedContainerType === 'regular' ? 'text-green-600' : 'text-gray-600'
+                              }`} />
+                              <span className={`font-bold text-sm ${
+                                selectedContainerSize === sizeOption.size && selectedContainerType === 'regular' ? 'text-green-700' : 'text-gray-700'
+                              }`}>
+                                {sizeOption.size.toUpperCase()} - Regular
+                              </span>
+                            </div>
+                            
+                            {capacity && (
+                              <div className="space-y-1 text-xs">
+                                <div className="flex justify-between">
+                                  <span className="text-gray-600">Volume:</span>
+                                  <span className="font-semibold">{capacity.volume}m³</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-600">Weight:</span>
+                                  <span className="font-semibold">{capacity.weight.toLocaleString()}kg</span>
+                                </div>
+                              </div>
+                            )}
+                          </motion.button>
+                        )}
+
+                        {/* Freezed Container - Only show if available */}
+                        {sizeOption.freezed && (
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => handleContainerSelection(sizeOption.size, 'freezed')}
+                            className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left ${
+                              selectedContainerSize === sizeOption.size && selectedContainerType === 'freezed'
+                                ? 'border-blue-500 bg-blue-50 shadow-lg'
+                                : 'border-gray-200 hover:border-blue-300 hover:bg-blue-25'
+                            }`}
+                          >
+                            <div className="flex items-center mb-2">
+                              <Thermometer className={`w-5 h-5 mr-2 ${
+                                selectedContainerSize === sizeOption.size && selectedContainerType === 'freezed'
+                                  ? 'text-blue-600' 
+                                  : 'text-gray-600'
+                              }`} />
+                              <span className={`font-bold text-sm ${
+                                selectedContainerSize === sizeOption.size && selectedContainerType === 'freezed'
+                                  ? 'text-blue-700' 
+                                  : 'text-gray-700'
+                              }`}>
+                                {sizeOption.size.toUpperCase()} - Freezed
+                              </span>
+                            </div>
+                            
+                            {capacity && capacity.freezed ? (
+                              <div className="space-y-1 text-xs">
+                                <div className="flex justify-between">
+                                  <span className="text-gray-600">Volume:</span>
+                                  <span className="font-semibold">{capacity.freezed.volume}m³</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-600">Weight:</span>
+                                  <span className="font-semibold">{capacity.freezed.weight.toLocaleString()}kg</span>
+                                </div>
+                              </div>
+                            ) : capacity ? (
+                              <div className="space-y-1 text-xs">
+                                <div className="flex justify-between">
+                                  <span className="text-gray-600">Volume:</span>
+                                  <span className="font-semibold">{capacity.volume}m³</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-600">Weight:</span>
+                                  <span className="font-semibold">{capacity.weight.toLocaleString()}kg</span>
+                                </div>
+                              </div>
+                            ) : null}
+                          </motion.button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+
+
+          {/* Summary and Confirm */}
+          <AnimatePresence>
+            {canProceed && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-3xl shadow-xl p-8 text-white"
+              >
+                <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div>
+                    <h3 className="font-semibold mb-3">Shipping Details</h3>
+                    <div className="space-y-2 text-indigo-100">
+                      <div>Country: {selectedCountryData?.name}</div>
+                      <div>Transport: {selectedTransportType?.toUpperCase()}</div>
+                      <div>Container: {selectedContainerSize?.toUpperCase()}</div>
+                      <div>Type: {selectedContainerType === 'freezed' ? 'Freezed' : 'Regular'}</div>
+                    </div>
+                  </div>
+                  
+                  {actualCapacity && (
+                    <div>
+                      <h3 className="font-semibold mb-3">Container Capacity</h3>
+                      <div className="space-y-2 text-indigo-100">
+                        <div>Max Volume: {actualCapacity.volume}m³</div>
+                        <div>Max Weight: {actualCapacity.weight.toLocaleString()}kg</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    // Get the selected country data
+                    const countryData = countriesData?.find(c => c.id === selectedCountry);
+                    
+                    // Update container in OrderContext
+                    updateContainerSettings(0, {
+                      country_id: selectedCountry,
+                      container_standard: {
+                        size: selectedContainerSize,
+                        freezed: selectedContainerType === 'freezed',
+                        type: selectedTransportType
+                      }
+                    });
+                    
+                    // Navigate to products page
+                    router.push('/orders/products');
+                  }}
+                  className="w-full bg-white text-indigo-600 font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                >
+                  Confirm and Continue
+                </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-    );
-}
+      </div>
+    </div>
+  );
+};
+
+export default NewOrderPage;
