@@ -1,18 +1,21 @@
 "use client"
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { use } from 'react';
+import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { ShoppingCart, Box, Scale, Package, Calendar, Clock, Tag } from 'lucide-react';
 
-const VariantPage = ({ params }) => {
-    const resolvedParams = use(params);
+const VariantPage = () => {
+    const params = useParams();
     const { data: variant, isLoading, error } = useQuery({
-        queryKey: ['variant', resolvedParams.product, resolvedParams.variant],
+        queryKey: ['variant', params.product, params.variant],
         queryFn: async () => {
-            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/products/${resolvedParams.product}/variants/${resolvedParams.variant}`);
+            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/products/${params.product}/variants/${params.variant}`);
+            console.log(data);
+            
             return data?.data;
-        }
+        },
+        enabled: !!params.product && !!params.variant
     });
 
     if (isLoading) {
@@ -53,8 +56,8 @@ const VariantPage = ({ params }) => {
                 <div className="space-y-6">
                     <div className="relative h-[500px] w-[400px] mx-auto rounded-2xl overflow-hidden">
                         <Image
-                            src={variant.image?`https://setalkel.amjadshbib.com/public/${variant.image}`:null}
-                            alt={variant.size}
+                            src={variant.image ? `https://setalkel.amjadshbib.com/public/${variant.image}` : '/placeholder-product .jpg'}
+                            alt={variant.size || 'Product variant'}
                             fill
                             className="object-contain"
                         />

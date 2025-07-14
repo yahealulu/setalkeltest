@@ -6,8 +6,7 @@ import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plane, Ship, Truck, Package, Thermometer, CheckCircle } from 'lucide-react';
 import ReactFlagsSelect from 'react-flags-select';
-import { useRouter } from '@/i18n/routing';
-import { useOrder } from '@/context/OrderContext';
+import { useRouter } from 'next/navigation';
 
 // Container capacity data
 const CONTAINER_CAPACITIES = {
@@ -18,7 +17,6 @@ const CONTAINER_CAPACITIES = {
 
 const NewOrderPage = () => {
   const router = useRouter();
-  const { updateContainerSettings } = useOrder();
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedTransportType, setSelectedTransportType] = useState('');
   const [selectedContainerSize, setSelectedContainerSize] = useState('');
@@ -86,6 +84,25 @@ const NewOrderPage = () => {
   };
 
   const canProceed = selectedCountry && selectedTransportType && selectedContainerSize && selectedContainerType;
+
+  const handleConfirmAndContinue = () => {
+    if (!canProceed) return;
+    
+    const orderData = {
+      countryCode: selectedCountry,
+      countryName: selectedCountryData?.name,
+      countryId: selectedCountryData?.id,
+      transportType: selectedTransportType,
+      containerSize: selectedContainerSize,
+      containerType: selectedContainerType
+    };
+    
+    // Save order data to localStorage
+    localStorage.setItem('orderData', JSON.stringify(orderData));
+    
+    // Navigate to fill page
+    router.push('/orders/fill');
+  };
 
   if (isLoading) {
     return (
@@ -421,23 +438,7 @@ const NewOrderPage = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => {
-                    // Get the selected country data
-                    const countryData = countriesData?.find(c => c.id === selectedCountry);
-                    
-                    // Update container in OrderContext
-                    updateContainerSettings(0, {
-                      country_id: selectedCountry,
-                      container_standard: {
-                        size: selectedContainerSize,
-                        freezed: selectedContainerType === 'freezed',
-                        type: selectedTransportType
-                      }
-                    });
-                    
-                    // Navigate to products page
-                    router.push('/orders/products');
-                  }}
+                  onClick={handleConfirmAndContinue}
                   className="w-full bg-white text-indigo-600 font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                 >
                   Confirm and Continue

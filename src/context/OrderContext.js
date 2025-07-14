@@ -18,19 +18,9 @@ const initialContainerState = {
     product_ids: []
 };
 
-// Initial order details state
-const initialOrderDetails = {
-    country: null,
-    transportType: '',
-    containerSize: '',
-    containerType: '',
-    capacity: null
-};
-
 export function OrderProvider({ children }) {
     const [containers, setContainers] = useState([initialContainerState]);
     const [currentContainerIndex, setCurrentContainerIndex] = useState(0);
-    const [orderDetails, setOrderDetails] = useState(initialOrderDetails);
 
     const getCurrentContainer = () => containers[currentContainerIndex];
 
@@ -125,17 +115,15 @@ export function OrderProvider({ children }) {
         <OrderContext.Provider value={{
             containers,
             currentContainerIndex,
-            setCurrentContainerIndex,
-            orderDetails,
-            setOrderDetails,
-            updateCurrentContainer,
-            addNewContainer,
-            updateContainerSettings,
+            orderData: getCurrentContainer(),
+            updateOrderData: updateCurrentContainer,
             addVariant,
             removeVariant,
-            updateVariantQuantity,
             updateVariantNote,
-            resetOrder
+            updateVariantQuantity,
+            resetOrder,
+            addNewContainer,
+            updateContainerSettings
         }}>
             {children}
         </OrderContext.Provider>
@@ -148,4 +136,4 @@ export function useOrder() {
         throw new Error('useOrder must be used within an OrderProvider');
     }
     return context;
-}
+} 
