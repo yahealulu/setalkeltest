@@ -36,7 +36,8 @@ const Header = () => {
                 <Link href="/about-us" className="text-gray-600 hover:text-gray-900">About Us</Link>
                 <Link href="/contact-us" className="text-gray-600 hover:text-gray-900">Contact Us</Link>
                 <div className="h-4 w-[1px] bg-gray-300"></div>
-                <Link href="/offers" className="text-gray-600 hover:text-gray-900">Offers</Link>
+                <Link href="/partners" className="text-gray-600 hover:text-gray-900">Partners</Link>
+                <Link href="/agents" className="text-gray-600 hover:text-gray-900">Agents</Link>
               </div>
 
               {/* Right Links */}
