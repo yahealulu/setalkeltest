@@ -1,22 +1,55 @@
-"use client"
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+'use client';
+
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
-import { ShoppingCart, Box, Scale, Package, Calendar, Clock, Tag } from 'lucide-react';
+import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
+import axios from 'axios';
+import { ArrowLeft, Package, Scale, Barcode, Box, CheckCircle, XCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import JsBarcode from 'jsbarcode';
 
 const VariantPage = () => {
+    const router = useRouter();
     const params = useParams();
+    const [barcodeUrl, setBarcodeUrl] = useState('');
+
+    // Fetch variant data
     const { data: variant, isLoading, error } = useQuery({
         queryKey: ['variant', params.product, params.variant],
         queryFn: async () => {
-            const { data } = await axios.get(`https://setalkel.amjadshbib.com/api/products/${params.product}/variants/${params.variant}`);
-            console.log(data);
-            
+            const { data } = await axios.get(
+                `https://setalkel.amjadshbib.com/api/products/${params.product}/variants/${params.variant}`
+            );
             return data?.data;
         },
         enabled: !!params.product && !!params.variant
     });
+
+    // Generate barcode image
+    useEffect(() => {
+        if (variant?.barcode) {
+            const canvas = document.createElement('canvas');
+            try {
+                JsBarcode(canvas, variant.barcode, {
+                    format: 'CODE128',
+                    displayValue: true,
+                    fontSize: 16,
+                    margin: 10,
+                    background: '#ffffff',
+                    lineColor: '#000000',
+                    width: 2,
+                    height: 100,
+                });
+                setBarcodeUrl(canvas.toDataURL('image/png'));
+            } catch (e) {
+                console.error('Error generating barcode:', e);
+                // Fallback to text display if barcode generation fails
+            }
+        }
+    }, [variant]);
 
     if (isLoading) {
         return (
@@ -51,124 +84,148 @@ const VariantPage = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <div className="grid grid-cols-2 gap-8">
-                {/* Left Column - Image */}
+            {/* Back button and title */}
+            <div className="flex items-center mb-8">
+                <button
+                    onClick={() => router.back()}
+                    className="mr-4 p-2 rounded-lg bg-white shadow-md hover:shadow-lg transition-all"
+                >
+                    <ArrowLeft className="w-5 h-5" />
+                </button>
+                <h1 className="text-3xl font-bold text-gray-800">Variant Details</h1>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left Column - Image and Basic Info */}
                 <div className="space-y-6">
-                    <div className="relative h-[500px] w-[400px] mx-auto rounded-2xl overflow-hidden">
+                    <div className="relative h-[400px] bg-gray-50 rounded-2xl overflow-hidden shadow-md">
                         <Image
-                            src={variant.image ? `https://setalkel.amjadshbib.com/public/${variant.image}` : '/placeholder-product .jpg'}
-                            alt={variant.size || 'Product variant'}
+                            src={variant.image ? `https://setalkel.amjadshbib.com/public/${variant.image}` : '/placeholder-product.jpg'}
+                            alt={variant.size || 'Variant'}
                             fill
                             className="object-contain"
                         />
-                        {variant.is_new && (
-                            <span className="absolute top-0 left-0 bg-green-500 text-white px-3 py-1 rounded-t--full text-sm">
-                                New
-                            </span>
-                        )}
-                        {variant.is_hidden && (
-                            <span className="absolute top-0 right-0 bg-yellow-500 text-white px-3 py-1 rounded-te-full text-sm">
-                                Hidden
-                            </span>
-                        )}
                     </div>
+
+                    {/* Barcode Section */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-white rounded-2xl shadow-md p-6 space-y-4"
+                    >
+                        <h2 className="text-xl font-semibold flex items-center">
+                            <Barcode className="w-5 h-5 mr-2 text-indigo-600" />
+                            Barcode
+                        </h2>
+                        <div className="flex flex-col items-center justify-center p-4 bg-white rounded-lg border border-gray-200">
+                            {barcodeUrl ? (
+                                <img src={barcodeUrl} alt="Product Barcode" className="max-w-full" />
+                            ) : (
+                                <div className="text-gray-600 text-center">
+                                    <p className="font-mono text-lg">{variant.barcode}</p>
+                                    <p className="text-sm mt-2">Barcode display unavailable</p>
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
                 </div>
 
                 {/* Right Column - Details */}
-                <div className="space-y-8">
-                    {/* Basic Information */}
-                    <div className="space-y-4">
-                        <h1 className="text-3xl font-bold text-gray-900 capitalize">{variant.size}</h1>
-                        <div className="flex items-center gap-2 text-gray-600">
-                            <Tag className="w-4 h-4" />
-                            <span>Product Code: {variant.product.product_code}</span>
-                        </div>
-                    </div>
-
-                    {/* Status Badges */}
-                    <div className="flex flex-wrap gap-3">
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${variant.in_stock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                            {variant.in_stock ? 'In Stock' : 'Out of Stock'}
-                        </span>
-                        {variant.is_new && (
-                            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
-                                New Product
-                            </span>
-                        )}
-                        {variant.is_hidden && (
-                            <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium">
-                                Hidden
-                            </span>
-                        )}
-                    </div>
-                    {/* Detailed Information */}
-                    <div className="grid grid-cols-2 gap-6">
-                        {/* Packaging Information */}
+                <div className="space-y-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-white rounded-2xl shadow-md p-6 space-y-6"
+                    >
                         <div className="space-y-4">
-                            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                                <Package className="w-5 h-5" />
-                                Packaging Details
-                            </h2>
-                            <div className="space-y-2">
-                                <div>
-                                    <span className="text-gray-500">Type:</span>
-                                    <p className="font-medium capitalize">{variant.packaging}</p>
+                            <h2 className="text-2xl font-bold text-gray-800">{variant.size}</h2>
+                            
+                            <div className="flex flex-wrap gap-4">
+                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${variant.in_stock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                    {variant.in_stock ? 'In Stock' : 'Out of Stock'}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Packaging Information */}
+                        <div className="space-y-3">
+                            <h3 className="text-lg font-semibold flex items-center">
+                                <Package className="w-5 h-5 mr-2 text-indigo-600" />
+                                Packaging Information
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
+                                <div className="space-y-1">
+                                    <p className="text-sm text-gray-500">Packaging Type</p>
+                                    <p className="font-medium">{variant.packaging}</p>
                                 </div>
-                                <div>
-                                    <span className="text-gray-500">Box Packing:</span>
+                                <div className="space-y-1">
+                                    <p className="text-sm text-gray-500">Box Packing</p>
                                     <p className="font-medium">{variant.box_packing}</p>
                                 </div>
-                                <div>
-                                    <span className="text-gray-500">Box Dimensions:</span>
+                                <div className="space-y-1">
+                                    <p className="text-sm text-gray-500">Box Dimensions</p>
                                     <p className="font-medium">{variant.box_dimensions}</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Weight Information */}
-                        <div className="space-y-4">
-                            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                                <Scale className="w-5 h-5" />
+                        <div className="space-y-3">
+                            <h3 className="text-lg font-semibold flex items-center">
+                                <Scale className="w-5 h-5 mr-2 text-indigo-600" />
                                 Weight Information
-                            </h2>
-                            <div className="space-y-2">
-                                <div>
-                                    <span className="text-gray-500">Net Weight:</span>
-                                    <p className="font-medium">{variant.net_weight} kg</p>
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
+                                <div className="space-y-1">
+                                    <p className="text-sm text-gray-500">Net Weight</p>
+                                    <p className="font-medium">{variant.net_weight} g</p>
                                 </div>
-                                <div>
-                                    <span className="text-gray-500">Gross Weight:</span>
-                                    <p className="font-medium">{variant.gross_weight} kg</p>
+                                <div className="space-y-1">
+                                    <p className="text-sm text-gray-500">Gross Weight</p>
+                                    <p className="font-medium">{variant.gross_weight} g</p>
                                 </div>
-                                <div>
-                                    <span className="text-gray-500">Tare Weight:</span>
-                                    <p className="font-medium">{variant.tare_weight} kg</p>
+                                <div className="space-y-1">
+                                    <p className="text-sm text-gray-500">Tare Weight</p>
+                                    <p className="font-medium">{variant.tare_weight} g</p>
                                 </div>
-                                <div>
-                                    <span className="text-gray-500">Standard Weight:</span>
-                                    <p className="font-medium">{variant.standard_weight} kg</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Stock Information */}
-                        <div className="space-y-4">
-                            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                                <Box className="w-5 h-5" />
-                                Stock Information
-                            </h2>
-                            <div className="space-y-2">
-                                <div>
-                                    <span className="text-gray-500">Available Quantity:</span>
-                                    <p className="font-medium">{variant.free_quantity} units</p>
+                                <div className="space-y-1">
+                                    <p className="text-sm text-gray-500">Standard Weight</p>
+                                    <p className="font-medium">{variant.standard_weight} g</p>
                                 </div>
                             </div>
                         </div>
 
-                        
+                        {/* User Rating & Price (if available) */}
+                        {(variant.user_rating || variant.user_price) && (
+                            <div className="space-y-3">
+                                <h3 className="text-lg font-semibold">User Information</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
+                                    {variant.user_rating && (
+                                        <div className="space-y-1">
+                                            <p className="text-sm text-gray-500">User Rating</p>
+                                            <p className="font-medium">{variant.user_rating}</p>
+                                        </div>
+                                    )}
+                                    {variant.user_price && (
+                                        <div className="space-y-1">
+                                            <p className="text-sm text-gray-500">User Price</p>
+                                            <p className="font-medium">${JSON.stringify(variant.user_price)}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </motion.div>
+
+                    {/* Action Buttons */}
+                    <div className="flex space-x-4">
+                        <Link 
+                            href={`/${params.locale}/${params.product}`}
+                            className="flex-1 bg-indigo-600 text-white py-3 px-6 rounded-xl font-medium hover:bg-indigo-700 transition-colors text-center"
+                        >
+                            Back to Product
+                        </Link>
                     </div>
-
-                   
                 </div>
             </div>
         </div>

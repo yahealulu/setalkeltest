@@ -34,6 +34,8 @@ const FillOrderPage = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showVariants, setShowVariants] = useState(false);
   const [orderData, setOrderData] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   // Get order data from localStorage or URL params
   useEffect(() => {
@@ -63,7 +65,7 @@ const FillOrderPage = () => {
 
   // Fetch products based on country
   const { data: productsData, isLoading: productsLoading } = useQuery({
-    queryKey: ['country-products', orderData?.countryName],
+    queryKey: ['country-products', orderData?.countryName, activeContainerIndex],
     queryFn: async () => {
       if (!orderData?.countryName) return null;
       const token = localStorage.getItem('token');
@@ -76,11 +78,14 @@ const FillOrderPage = () => {
         }
       );
       console.log('the token is '+token);
-
       
       return data?.data?.[0] || null;
     },
-    enabled: !!orderData?.countryName
+    enabled: !!orderData?.countryName,
+    // Force refetch when active container changes
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchOnReconnect: false
   });
 
   // Fetch product variants
@@ -184,6 +189,31 @@ const FillOrderPage = () => {
         : product.material_property === 'dried'
     )
   })).filter(category => category.products.length > 0) || [];
+  
+  // Search functionality
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setSearchResults([]);
+      return;
+    }
+    
+    const query = searchQuery.toLowerCase();
+    const results = filteredProducts.filter(product => 
+      product.name_translations?.en?.toLowerCase().includes(query) ||
+      product.description_translations?.en?.toLowerCase().includes(query) ||
+      product.product_code?.toLowerCase().includes(query)
+    );
+    
+    setSearchResults(results);
+  }, [searchQuery, filteredProducts]);
+  
+  // Reset category and product selection when switching containers
+  useEffect(() => {
+    setSelectedCategory(null);
+    setSelectedProduct(null);
+    setSearchQuery('');
+    setSearchResults([]);
+  }, [activeContainerIndex]);
 
   // State for container selection modal
   const [showContainerModal, setShowContainerModal] = useState(false);
@@ -709,64 +739,172 @@ const FillOrderPage = () => {
             >
               {!selectedCategory ? (
                 <div>
-                  <h2 className="text-xl font-bold text-gray-800 mb-6">Select Category</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {categoriesWithFilteredProducts.map((category) => (
-                      <motion.div
-                        key={category.id}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setSelectedCategory(category)}
-                        className="p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all"
-                      >
-                        <img
-                          src={`https://setalkel.amjadshbib.com/public${category.image}`}
-                          alt={category.name_translations.en}
-                          className="w-full h-32 object-cover rounded-lg mb-3"
-                        />
-                        <h3 className="font-semibold text-gray-800">{category.name_translations.en}</h3>
-                        <p className="text-sm text-gray-600">{category.products.length} products</p>
-                      </motion.div>
-                    ))}
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-gray-800">Select Category</h2>
+                    <div className="relative w-64">
+                      <input
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                      {searchQuery && (
+                        <button
+                          onClick={() => setSearchQuery('')}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
+                  
+                  {searchQuery ? (
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-700 mb-4">Search Results</h3>
+                      {searchResults.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {searchResults.map((product) => (
+                            <motion.div
+                              key={product.id}
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              onClick={() => setSelectedProduct(product)}
+                              className="p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all"
+                            >
+                              <img
+                                src={`https://setalkel.amjadshbib.com/public/${product.image}`}
+                                alt={product.name_translations.en}
+                                className="w-full h-32 object-cover rounded-lg mb-3"
+                              />
+                              <h3 className="font-semibold text-gray-800">{product.name_translations.en}</h3>
+                              <p className="text-sm text-gray-600">{product.description_translations.en}</p>
+                              <div className="flex items-center justify-between mt-2">
+                                <span className={`px-2 py-1 rounded text-xs ${product.material_property === 'frozen' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
+                                  {product.material_property}
+                                </span>
+                                <Eye className="w-4 h-4 text-gray-400" />
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8">
+                          <p className="text-gray-500">No products found matching your search</p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {categoriesWithFilteredProducts.map((category) => (
+                        <motion.div
+                          key={category.id}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => setSelectedCategory(category)}
+                          className="p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all"
+                        >
+                          <img
+                            src={`https://setalkel.amjadshbib.com/public${category.image}`}
+                            alt={category.name_translations.en}
+                            className="w-full h-32 object-cover rounded-lg mb-3"
+                          />
+                          <h3 className="font-semibold text-gray-800">{category.name_translations.en}</h3>
+                          <p className="text-sm text-gray-600">{category.products.length} products</p>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : !selectedProduct ? (
                 <div>
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl font-bold text-gray-800">{selectedCategory.name_translations.en}</h2>
-                    <button
-                      onClick={() => setSelectedCategory(null)}
-                      className="text-gray-500 hover:text-gray-700"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
+                    <div className="flex items-center space-x-4">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          placeholder="Search in category..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                        {searchQuery && (
+                          <button
+                            onClick={() => setSearchQuery('')}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => setSelectedCategory(null)}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {selectedCategory.products.map((product) => (
-                      <motion.div
-                        key={product.id}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setSelectedProduct(product)}
-                        className="p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all"
-                      >
-                        <img
-                          src={`https://setalkel.amjadshbib.com/public/${product.image}`}
-                          alt={product.name_translations.en}
-                          className="w-full h-32 object-cover rounded-lg mb-3"
-                        />
-                        <h3 className="font-semibold text-gray-800">{product.name_translations.en}</h3>
-                        <p className="text-sm text-gray-600">{product.description_translations.en}</p>
-                        <div className="flex items-center justify-between mt-2">
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            product.material_property === 'frozen' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
-                          }`}>
-                            {product.material_property}
-                          </span>
-                          <Eye className="w-4 h-4 text-gray-400" />
-                        </div>
-                      </motion.div>
-                    ))}
+                    {searchQuery ? (
+                      // Filter products within the selected category
+                      selectedCategory.products
+                        .filter(product => 
+                          product.name_translations?.en?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          product.description_translations?.en?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          product.product_code?.toLowerCase().includes(searchQuery.toLowerCase())
+                        )
+                        .map((product) => (
+                          <motion.div
+                            key={product.id}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setSelectedProduct(product)}
+                            className="p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all"
+                          >
+                            <img
+                              src={`https://setalkel.amjadshbib.com/public/${product.image}`}
+                              alt={product.name_translations.en}
+                              className="w-full h-32 object-cover rounded-lg mb-3"
+                            />
+                            <h3 className="font-semibold text-gray-800">{product.name_translations.en}</h3>
+                            <p className="text-sm text-gray-600">{product.description_translations.en}</p>
+                            <div className="flex items-center justify-between mt-2">
+                              <span className={`px-2 py-1 rounded text-xs ${product.material_property === 'frozen' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
+                                {product.material_property}
+                              </span>
+                              <Eye className="w-4 h-4 text-gray-400" />
+                            </div>
+                          </motion.div>
+                        ))
+                    ) : (
+                      // Show all products in the category
+                      selectedCategory.products.map((product) => (
+                        <motion.div
+                          key={product.id}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => setSelectedProduct(product)}
+                          className="p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-all"
+                        >
+                          <img
+                            src={`https://setalkel.amjadshbib.com/public/${product.image}`}
+                            alt={product.name_translations.en}
+                            className="w-full h-32 object-cover rounded-lg mb-3"
+                          />
+                          <h3 className="font-semibold text-gray-800">{product.name_translations.en}</h3>
+                          <p className="text-sm text-gray-600">{product.description_translations.en}</p>
+                          <div className="flex items-center justify-between mt-2">
+                            <span className={`px-2 py-1 rounded text-xs ${product.material_property === 'frozen' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
+                              {product.material_property}
+                            </span>
+                            <Eye className="w-4 h-4 text-gray-400" />
+                          </div>
+                        </motion.div>
+                      ))
+                    )}
                   </div>
                 </div>
               ) : (
