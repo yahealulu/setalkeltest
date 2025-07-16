@@ -1,0 +1,168 @@
+{
+  "header": {
+    "days": "Sunday - Thursday",
+    "start": "8:00 AM",
+    "end": "4:00 PM"
+  },
+  "header2": {
+    "home": "Home",
+    "about": "About Us",
+    "projects": "Projects & Programs",
+    "news": "News & Events",
+    "contact": "Contact Us",
+    "jobs": "Join Us",
+    "Policies": "Policies",
+    "donateNow": "Donate Now",
+    "associationNameAr": "جمعية التألف",
+    "associationNameEn": "Al-TAALOUF Association",
+     "days": "Sunday - Thursday",
+    "start": "8:00 AM",
+    "end": "4:00 PM"
+  },
+  "banner": {
+    "we_make_difference": "We make a difference...",
+    "what_about_you": "What about you?",
+    "join_now": "Join Now"
+  },
+  "about": {
+    "title2": "About Us...",
+    "title": "About the Association",
+    "paragraph_1": "Al-Ta'alouf Association was established in 2005 with the aim of providing humanitarian services to various segments of society, with a special focus ",
+    "paragraph_2": "The association operates within a civilized environment through economic, social, developmental, medical, and educational projects on the most vulnerable and poorest..",
+    "paragraph_3": "It is managed by a distinguished team of humanitarian workers.",
+    "read_more": "Read More",
+    "paragraph_4": "The association aims to provide humanitarian services to all groups of society without discrimination, with a particular focus on the most vulnerable and needy, to enhance resilience and empower local communities.",
+    "paragraph_5": "It works in various sectors including health, education, livelihoods, shelter, protection, and other essential humanitarian fields.",
+    "paragraph_6": "The association operates with an institutional framework that ensures the highest standards of governance, transparency, and professionalism in delivering services.",
+    "paragraph_7": "It believes in partnerships and cooperation with local and international organizations to achieve sustainable development goals.",
+    "vision": "A leading association in the field of humanitarian work, capable of delivering services with the highest quality for a sustainable and empowered society.",
+    "goals": {
+      "g1": "Contribute to all acts of charity and aid for the needy and poor residents in both rural and urban areas.",
+      "g2": "Support outstanding students, raise awareness about humanitarian support, and encourage charitable cooperation in all its forms.",
+      "g3": "Work on improving the situation of women (culturally, health-wise, socially, and economically), support youth in marriage and family building, and assist divorced and widowed women in finding work and securing a dignified life.",
+      "g4": "Implement economic, social, scientific, and health projects to enhance job opportunities in poor communities in rural and urban areas, after obtaining approval from the competent authorities."
+    },
+    "mission": "An association that provides a range of humanitarian services to all segments of society, especially the most vulnerable and poorest, to be an effective and sustainable force through economic, social, health, and educational development projects in urban and rural areas, within a civilized work environment that includes a distinguished team of humanitarian workers.",
+    "values": {
+      "v1": "Respect for human rights",
+      "v2": "Humanitarian behavior",
+      "v3": "Transparency and integrity in work",
+      "v4": "Non-discrimination in society",
+      "v5": "Quality and excellence in task performance"
+    },
+    "structure": "Organizational Structure",
+    "visionTitle": "Vision",
+    "goalsTitle": "Goals",
+    "missionTitle": "Mission",
+    "valuesTitle": "Values"
+  },
+  "contact":{
+    "title2":"Contact Us"
+  },
+  "statistics": {
+    "title": "Statistics",
+    "beneficiaries_served": "Beneficiaries Served",
+    "humanitarian_sector": "Humanitarian Sector",
+    "projects_implemented": "Projects Implemented",
+    "international_partnership": "International Partnership"
+  },
+  "news": {
+    "title": "Latest News",
+    "readMore": "Read More",
+    "card1": {
+      "title": "Distribution of non-food aid to returnees in Tal Al-Dhoman",
+      "date": "Wednesday 2025/04/12"
+    },
+    "card2": {
+      "title": "Opening of the Hayat Center in Balas village, southern Aleppo countryside",
+      "date": "Tuesday 2025/04/22"
+    },
+    "card3": {
+      "title": "Opening of the Hayat Center in Balas village, southern Aleppo countryside",
+      "date": "Tuesday 2025/04/22"
+    },
+    "card4": {
+      "title": "Opening of the Hayat Center in Balas village, southern Aleppo countryside",
+      "date": "Tuesday 2025/04/22"
+    }
+  },
+  "projects": {
+    "title": "Superior Projects",
+    "readMore": "Read More",
+    "card1": {
+      "title": "Health Support Project",
+      "date": "From 2017 until now..."
+    },
+    "card2": {
+      "title": "Nutritional Care Support Project",
+      "date": "From 2013 until now..."
+    },
+    "card3": {
+      "title": "Community Protection and Returnee Support Project",
+      "date": "From 2014 until now..."
+    },
+    "card4": {
+      "title": "Health Support Project",
+      "date": "From 2017 until now..."
+    }
+  },
+  "parthners": "Parthners",
+  "partners": {
+    "title": "Partners' Opinions",
+    "card1": {
+      "name": "Mohammad Habbal",
+      "position": "Partnerships Manager - World Health Organization",
+      "content": "One of the leading associations in Aleppo in humanitarian work across various sectors, distinguished by its institutional system and flexibility in responding to humanitarian crises. We had the honor of partnering in the health sector to implement a portfolio of projects in Aleppo since 2013 until now..."
+    }
+  },
+  "footer": {
+    "associationNameAr": "جمعية التآلف ",
+    "associationNameEn": "Al-Ta'alouf Humanitarian Association",
+    "description": "Licensed by a decision of the Ministry of Social Affairs",
+    "description2": "and Labor No. 396 dated 10/3/2005",
+    "newsletter": {
+      "title": "Newsletter",
+      "placeholder": "Your email address",
+      "subscribe": "Subscribe"
+    },
+    "importantLinks": "Important Links",
+    "contactUs": "Contact Us",
+    "links": {
+      "home": "Home",
+      "about": "About Us",
+      "projects": "Projects and Programs",
+      "news": "News and Events",
+      "contact": "Contact Us",
+      "careers": "Join Us",
+      "Policies": "Policies"
+    },
+    "days": "Sunday to Thursday",
+    "start": "09:00",
+    "end": "17:00",
+    "rights": "All rights reserved © Al-Ta'alouf Association 2025",
+    "workingHours": "From 8:00 AM to 4:00 PM"
+  },
+   "contact2": {
+    "title": "Contact Us",
+    "suggestionTitle": "Do you have a suggestion or complaint?",
+    "messageLine1": "If you have any questions, suggestions, or complaints, we are listening.",
+    "messageLine2": "We strive to find solutions, don't hesitate to contact us...",
+    "callUs": "Call Us",
+    "location": "Our Location",
+    "address1": "Al-Martini - Al-Taalouf Association Building",
+    "address2": "Al-Noor - 5th Floor",
+    "emailUs": "Send us an Email",
+    "workingHours": "Working Hours",
+    "details": "Details",
+    "optionalInfo": "Optional personal information",
+    "locationsTitle": "Center Locations"
+  },
+  "form": {
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone Number",
+    "message": "Message",
+    "send": "Send"
+  }
+}
