@@ -26,7 +26,14 @@ export default function ContactUs() {
   });
 
   // Trade activity options
-  const tradeActivities = [
+  const tradeActivities = locale === 'ar' ? [
+    'وكيل',
+    'تجارة جملة',
+    'تجارة تجزئة',
+    'مول',
+    'تموين',
+    'أخرى'
+  ] : [
     'Agent',
     'Wholesales',
     'Retail',
@@ -183,7 +190,9 @@ export default function ContactUs() {
           </h1>
           <div className="w-24 h-1 bg-[#4c5a3c] mx-auto rounded mb-6"></div>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Give us a call or message via your email. We're here for you 24/7
+            {locale === 'ar' 
+              ? 'اتصل بنا أو راسلنا عبر البريد الإلكتروني. نحن هنا لخدمتك على مدار الساعة'
+              : 'Give us a call or message via your email. We\'re here for you 24/7'}
           </p>
         </div>
 
@@ -195,7 +204,7 @@ export default function ContactUs() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Name *
+                    {locale === 'ar' ? 'الاسم *' : 'Name *'}
                   </label>
                   <input
                     type="text"
@@ -208,7 +217,7 @@ export default function ContactUs() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address *
+                    {locale === 'ar' ? 'البريد الإلكتروني *' : 'Email Address *'}
                   </label>
                   <input
                     type="email"
@@ -225,7 +234,7 @@ export default function ContactUs() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Country *
+                    {locale === 'ar' ? 'الدولة *' : 'Country *'}
                   </label>
                   <input
                     type="text"
@@ -238,7 +247,7 @@ export default function ContactUs() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    City *
+                    {locale === 'ar' ? 'المدينة *' : 'City *'}
                   </label>
                   <input
                     type="text"
@@ -255,7 +264,7 @@ export default function ContactUs() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number *
+                    {locale === 'ar' ? 'رقم الهاتف *' : 'Phone Number *'}
                   </label>
                   <input
                     type="tel"
@@ -268,7 +277,7 @@ export default function ContactUs() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Trade Activity *
+                    {locale === 'ar' ? 'النشاط التجاري *' : 'Trade Activity *'}
                   </label>
                   <select
                     name="trade_activity"
@@ -277,7 +286,7 @@ export default function ContactUs() {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4c5a3c] focus:border-transparent transition-colors"
                     required
                   >
-                    <option value="">Select Trade Activity</option>
+                    <option value="">{locale === 'ar' ? 'اختر النشاط التجاري' : 'Select Trade Activity'}</option>
                     {tradeActivities.map((activity) => (
                       <option key={activity} value={activity}>
                         {activity}
@@ -291,7 +300,7 @@ export default function ContactUs() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Website
+                    {locale === 'ar' ? 'الموقع الإلكتروني' : 'Website'}
                   </label>
                   <input
                     type="url"
@@ -299,12 +308,12 @@ export default function ContactUs() {
                     value={formData.website}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4c5a3c] focus:border-transparent transition-colors"
-                    placeholder="https://example.com"
+                    placeholder={locale === 'ar' ? 'https://example.com' : 'https://example.com'}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Your Role
+                    {locale === 'ar' ? 'دورك' : 'Your Role'}
                   </label>
                   <input
                     type="text"
@@ -312,7 +321,7 @@ export default function ContactUs() {
                     value={formData.your_role}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4c5a3c] focus:border-transparent transition-colors"
-                    placeholder="e.g., Manager, Owner, etc."
+                    placeholder={locale === 'ar' ? 'مثال: مدير، مالك، إلخ.' : 'e.g., Manager, Owner, etc.'}
                   />
                 </div>
               </div>
@@ -320,7 +329,7 @@ export default function ContactUs() {
               {/* Visitor Interests */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Visitor Interests
+                  {locale === 'ar' ? 'اهتمامات الزائر' : 'Visitor Interests'}
                 </label>
                 <div className="space-y-4">
                   {/* Selected Interests */}
@@ -348,7 +357,7 @@ export default function ContactUs() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-600 mb-2">
-                        Select from list
+                        {locale === 'ar' ? 'اختر من القائمة' : 'Select from list'}
                       </label>
                       <select
                         onChange={(e) => {
@@ -359,7 +368,7 @@ export default function ContactUs() {
                         }}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4c5a3c] focus:border-transparent transition-colors"
                       >
-                        <option value="">Choose an interest</option>
+                        <option value="">{locale === 'ar' ? 'اختر اهتمامًا' : 'Choose an interest'}</option>
                         {visitorInterests.map((interest) => (
                           <option key={interest} value={interest}>
                             {interest}
@@ -369,14 +378,14 @@ export default function ContactUs() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-600 mb-2">
-                        Add custom interest
+                        {locale === 'ar' ? 'إضافة اهتمام مخصص' : 'Add custom interest'}
                       </label>
                       <div className="flex gap-2">
                         <input
                           type="text"
                           value={customInterest}
                           onChange={(e) => setCustomInterest(e.target.value)}
-                          placeholder="Type custom interest"
+                          placeholder={locale === 'ar' ? 'اكتب اهتمامًا مخصصًا' : 'Type custom interest'}
                           className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4c5a3c] focus:border-transparent transition-colors"
                         />
                         <button
@@ -384,7 +393,7 @@ export default function ContactUs() {
                           onClick={() => addInterest(customInterest)}
                           className="px-4 py-3 bg-[#4c5a3c] text-white rounded-lg hover:bg-[#3a4530] transition-colors"
                         >
-                          Add
+                          {locale === 'ar' ? 'إضافة' : 'Add'}
                         </button>
                       </div>
                     </div>
@@ -395,7 +404,7 @@ export default function ContactUs() {
               {/* Message */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Message *
+                  {locale === 'ar' ? 'الرسالة *' : 'Message *'}
                 </label>
                 <textarea
                   name="message"
@@ -403,7 +412,7 @@ export default function ContactUs() {
                   onChange={handleInputChange}
                   rows={4}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4c5a3c] focus:border-transparent transition-colors resize-none"
-                  placeholder="Tell us about your inquiry..."
+                  placeholder={locale === 'ar' ? 'أخبرنا عن استفسارك...' : 'Tell us about your inquiry...'}
                   required
                 />
               </div>
@@ -411,13 +420,13 @@ export default function ContactUs() {
               {/* File Upload */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Upload Files (Optional)
+                  {locale === 'ar' ? 'تحميل الملفات (اختياري)' : 'Upload Files (Optional)'}
                 </label>
                 <div className="flex items-center gap-4">
                   <label className="flex items-center gap-2 px-4 py-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                     <Upload size={20} className="text-gray-500" />
                     <span className="text-gray-600">
-                      {formData.file ? formData.file.name : 'Choose PDF or Image'}
+                      {formData.file ? formData.file.name : (locale === 'ar' ? 'اختر ملف PDF أو صورة' : 'Choose PDF or Image')}
                     </span>
                     <input
                       type="file"
@@ -437,7 +446,9 @@ export default function ContactUs() {
                   )}
                 </div>
                 <p className="text-sm text-gray-500 mt-2">
-                  Accepted formats: PDF, JPG, PNG, GIF (Max 10MB)
+                  {locale === 'ar' 
+                    ? 'الصيغ المقبولة: PDF، JPG، PNG، GIF (الحد الأقصى 10 ميجابايت)'
+                    : 'Accepted formats: PDF, JPG, PNG, GIF (Max 10MB)'}
                 </p>
               </div>
 
@@ -451,12 +462,12 @@ export default function ContactUs() {
                   {contactMutation.isPending ? (
                     <>
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      Sending...
+                      {locale === 'ar' ? 'جاري الإرسال...' : 'Sending...'}
                     </>
                   ) : (
                     <>
                       <Send size={20} />
-                      Send Message
+                      {locale === 'ar' ? 'إرسال الرسالة' : 'Send Message'}
                     </>
                   )}
                 </button>
@@ -467,4 +478,4 @@ export default function ContactUs() {
       </div>
     </main>
   );
-} 
+}

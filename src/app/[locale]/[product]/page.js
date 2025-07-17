@@ -3,6 +3,7 @@
 import { use, useRef, useEffect, useState, useContext } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Calendar, Box, Globe, Tag, Barcode, Package, Scale, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { motion, useMotionValue, AnimatePresence } from 'framer-motion';
@@ -13,6 +14,8 @@ import JsBarcode from 'jsbarcode';
 const ProductPage = ({ params }) => {
     const resolvedParams = use(params);
     const { user } = useContext(AuthContext);
+    const pathname = usePathname();
+    const locale = pathname.split('/')[1] || 'en';
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [barcodeUrl, setBarcodeUrl] = useState('');
     const relatedContainerRef = useRef(null);
@@ -155,7 +158,7 @@ const ProductPage = ({ params }) => {
         return (
             <div className="container mx-auto px-4 py-8">
                 <div className="bg-red-50 text-red-600 p-4 rounded-lg">
-                    Failed to load product details
+                    {locale === 'ar' ? 'فشل تحميل تفاصيل المنتج' : 'Failed to load product details'}
                 </div>
             </div>
         );
@@ -164,7 +167,9 @@ const ProductPage = ({ params }) => {
     if (!product) {
         return (
             <div className="container mx-auto px-4 py-8">
-                <div className="text-gray-500">Product not found</div>
+                <div className="text-gray-500">
+                    {locale === 'ar' ? 'المنتج غير موجود' : 'Product not found'}
+                </div>
             </div>
         );
     }
@@ -200,12 +205,12 @@ const ProductPage = ({ params }) => {
                             </AnimatePresence>
                             {product?.is_new && (
                                 <span className="absolute top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-md">
-                                    New
+                                    {locale === 'ar' ? 'جديد' : 'New'}
                                 </span>
                             )}
                             {product?.is_hidden && (
                                 <span className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-md">
-                                    Hidden
+                                    {locale === 'ar' ? 'مخفي' : 'Hidden'}
                                 </span>
                             )}
                         </div>
@@ -213,7 +218,9 @@ const ProductPage = ({ params }) => {
                         {/* Variant Selection */}
                         {variants?.length > 0 && (
                             <div className="space-y-4">
-                                <h3 className="text-lg font-semibold text-gray-800">Available Variants</h3>
+                                <h3 className="text-lg font-semibold text-gray-800">
+                                    {locale === 'ar' ? 'المتغيرات المتاحة' : 'Available Variants'}
+                                </h3>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                                     {/* Main Product Image Button */}
                                     <button
@@ -230,7 +237,9 @@ const ProductPage = ({ params }) => {
                                                 className="object-contain"
                                             />
                                         </div>
-                                        <p className="text-sm font-medium text-center truncate">Main Product</p>
+                                        <p className="text-sm font-medium text-center truncate">
+                                            {locale === 'ar' ? 'المنتج الرئيسي' : 'Main Product'}
+                                        </p>
                                         {!selectedVariant && (
                                             <CheckCircle className="absolute top-2 right-2 w-4 h-4 text-blue-500" />
                                         )}
@@ -275,7 +284,7 @@ const ProductPage = ({ params }) => {
                             
                             <div className="flex items-center gap-2 text-gray-600">
                                 <Tag className="w-4 h-4" />
-                                <span>Product Code: {product?.product_code}</span>
+                                <span>{locale === 'ar' ? `رمز المنتج: ${product?.product_code}` : `Product Code: ${product?.product_code}`}</span>
                             </div>
                             
                             {product?.description_translations?.en && (
@@ -287,10 +296,14 @@ const ProductPage = ({ params }) => {
 
                         <div className="flex flex-wrap gap-3">
                             <span className={`px-3 py-1 rounded-full text-sm font-medium ${(selectedVariant?.in_stock || product?.in_stock) ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                {(selectedVariant?.in_stock || product?.in_stock) ? 'In Stock' : 'Out of Stock'}
+                                {(selectedVariant?.in_stock || product?.in_stock) 
+                                    ? (locale === 'ar' ? 'متوفر في المخزون' : 'In Stock') 
+                                    : (locale === 'ar' ? 'غير متوفر في المخزون' : 'Out of Stock')}
                             </span>
                             {product?.is_new && (
-                                <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-medium">New</span>
+                                <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-medium">
+                                    {locale === 'ar' ? 'جديد' : 'New'}
+                                </span>
                             )}
                         </div>
                         
@@ -304,17 +317,23 @@ const ProductPage = ({ params }) => {
                                         animate={{ opacity: 1, y: 0 }}
                                         className="bg-blue-50 border border-blue-100 rounded-xl p-4 space-y-3"
                                     >
-                                        <h3 className="text-lg font-semibold text-blue-800">Pricing</h3>
+                                        <h3 className="text-lg font-semibold text-blue-800">
+                                            {locale === 'ar' ? 'التسعير' : 'Pricing'}
+                                        </h3>
                                         <div className="grid grid-cols-2 gap-4">
                                             {variantDetails.user_price.piece_price && (
                                                 <div className="bg-white rounded-lg p-3 shadow-sm">
-                                                    <p className="text-sm text-gray-500">Price Per Piece</p>
+                                                    <p className="text-sm text-gray-500">
+                                                        {locale === 'ar' ? 'السعر لكل قطعة' : 'Price Per Piece'}
+                                                    </p>
                                                     <p className="text-xl font-bold text-blue-600">${variantDetails.user_price.piece_price}</p>
                                                 </div>
                                             )}
                                             {variantDetails.user_price.box_price && (
                                                 <div className="bg-white rounded-lg p-3 shadow-sm">
-                                                    <p className="text-sm text-gray-500">Box Price</p>
+                                                    <p className="text-sm text-gray-500">
+                                                        {locale === 'ar' ? 'سعر الصندوق' : 'Box Price'}
+                                                    </p>
                                                     <p className="text-xl font-bold text-blue-600">${variantDetails.user_price.box_price}</p>
                                                 </div>
                                             )}
@@ -326,19 +345,25 @@ const ProductPage = ({ params }) => {
                                 <div className="space-y-3">
                                     <h3 className="text-lg font-semibold flex items-center">
                                         <Package className="w-5 h-5 mr-2 text-indigo-600" />
-                                        Packaging Information
+                                        {locale === 'ar' ? 'معلومات التعبئة والتغليف' : 'Packaging Information'}
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                                            <p className="text-sm text-gray-500">Packaging Type</p>
+                                            <p className="text-sm text-gray-500">
+                                                {locale === 'ar' ? 'نوع التعبئة' : 'Packaging Type'}
+                                            </p>
                                             <p className="font-medium">{variantDetails.packaging}</p>
                                         </div>
                                         <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                                            <p className="text-sm text-gray-500">Box Packing</p>
+                                            <p className="text-sm text-gray-500">
+                                                {locale === 'ar' ? 'تعبئة الصندوق' : 'Box Packing'}
+                                            </p>
                                             <p className="font-medium">{variantDetails.box_packing}</p>
                                         </div>
                                         <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                                            <p className="text-sm text-gray-500">Box Dimensions</p>
+                                            <p className="text-sm text-gray-500">
+                                                {locale === 'ar' ? 'أبعاد الصندوق' : 'Box Dimensions'}
+                                            </p>
                                             <p className="font-medium">{variantDetails.box_dimensions}</p>
                                         </div>
                                     </div>
@@ -348,26 +373,34 @@ const ProductPage = ({ params }) => {
                                 <div className="space-y-3">
                                     <h3 className="text-lg font-semibold flex items-center">
                                         <Scale className="w-5 h-5 mr-2 text-indigo-600" />
-                                        Weight Information
+                                        {locale === 'ar' ? 'معلومات الوزن' : 'Weight Information'}
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                                            <p className="text-sm text-gray-500">Net Weight</p>
+                                            <p className="text-sm text-gray-500">
+                                                {locale === 'ar' ? 'الوزن الصافي' : 'Net Weight'}
+                                            </p>
                                             <p className="font-medium">{variantDetails.net_weight} g</p>
                                         </div>
                                         <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                                            <p className="text-sm text-gray-500">Gross Weight</p>
+                                            <p className="text-sm text-gray-500">
+                                                {locale === 'ar' ? 'الوزن الإجمالي' : 'Gross Weight'}
+                                            </p>
                                             <p className="font-medium">{variantDetails.gross_weight} g</p>
                                         </div>
                                         {variantDetails.tare_weight && (
                                             <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                                                <p className="text-sm text-gray-500">Tare Weight</p>
+                                                <p className="text-sm text-gray-500">
+                                                    {locale === 'ar' ? 'وزن الفارغ' : 'Tare Weight'}
+                                                </p>
                                                 <p className="font-medium">{variantDetails.tare_weight} g</p>
                                             </div>
                                         )}
                                         {variantDetails.standard_weight && (
                                             <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                                                <p className="text-sm text-gray-500">Standard Weight</p>
+                                                <p className="text-sm text-gray-500">
+                                                    {locale === 'ar' ? 'الوزن القياسي' : 'Standard Weight'}
+                                                </p>
                                                 <p className="font-medium">{variantDetails.standard_weight} g</p>
                                             </div>
                                         )}
@@ -379,7 +412,7 @@ const ProductPage = ({ params }) => {
                                     <div className="space-y-3">
                                         <h3 className="text-lg font-semibold flex items-center">
                                             <Barcode className="w-5 h-5 mr-2 text-indigo-600" />
-                                            Barcode
+                                            {locale === 'ar' ? 'الباركود' : 'Barcode'}
                                         </h3>
                                         <div className="flex justify-center p-4 bg-white rounded-xl border border-gray-200">
                                             {barcodeUrl ? (
@@ -404,7 +437,9 @@ const ProductPage = ({ params }) => {
             {relatedProducts?.length > 0 && (
                 <div className="bg-white rounded-3xl shadow-sm p-8 mt-8">
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-semibold">Related Products</h2>
+                        <h2 className="text-2xl font-semibold">
+                            {locale === 'ar' ? 'منتجات ذات صلة' : 'Related Products'}
+                        </h2>
                         <div className="flex space-x-2">
                             <button 
                                 onClick={() => scrollRelated('left')}
@@ -457,7 +492,9 @@ const ProductPage = ({ params }) => {
                                                 </div>
                                             )}
                                             {relatedProduct.is_new && (
-                                                <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">New</span>
+                                                <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                                    {locale === 'ar' ? 'جديد' : 'New'}
+                                                </span>
                                             )}
                                         </div>
                                         <div className="p-4 space-y-3">
@@ -474,11 +511,13 @@ const ProductPage = ({ params }) => {
                                                     </span>
                                                 )}
                                                 <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${relatedProduct.in_stock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                                    {relatedProduct.in_stock ? 'In Stock' : 'Out of Stock'}
+                                                    {relatedProduct.in_stock 
+                                                        ? (locale === 'ar' ? 'متوفر في المخزون' : 'In Stock') 
+                                                        : (locale === 'ar' ? 'غير متوفر في المخزون' : 'Out of Stock')}
                                                 </span>
                                             </div>
                                             <div className="flex items-center justify-center py-2 px-4 rounded-lg text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white transition-colors duration-200 mt-4">
-                                                View Product
+                                                {locale === 'ar' ? 'عرض المنتج' : 'View Product'}
                                             </div>
                                         </div>
                                     </motion.div>
@@ -492,7 +531,9 @@ const ProductPage = ({ params }) => {
             {/* Loading state for related products */}
             {relatedLoading && (
                 <div className="bg-white rounded-3xl shadow-sm p-8 mt-8">
-                    <h2 className="text-2xl font-semibold mb-6">Related Products</h2>
+                    <h2 className="text-2xl font-semibold mb-6">
+                        {locale === 'ar' ? 'منتجات ذات صلة' : 'Related Products'}
+                    </h2>
                     <div className="flex gap-6 overflow-x-auto pb-4">
                         {[1, 2, 3, 4].map((item) => (
                             <div key={item} className="animate-pulse bg-white rounded-2xl shadow-sm overflow-hidden flex-shrink-0 w-[280px]">

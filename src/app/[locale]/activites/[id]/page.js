@@ -59,7 +59,7 @@ export default function ActivityDetail({ params }) {
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-          <p className="text-red-700">Error loading activity details. Please try again later.</p>
+          <p className="text-red-700">{locale === 'ar' ? 'خطأ في تحميل تفاصيل النشاط. يرجى المحاولة مرة أخرى لاحقًا.' : 'Error loading activity details. Please try again later.'}</p>
         </div>
       </div>
     );
@@ -75,7 +75,7 @@ export default function ActivityDetail({ params }) {
       >
         {/* Activity Title */}
         <h1 className="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-800">
-          {activity.name_translations?.en || 'Activity'}
+          {activity.name_translations?.[locale] || activity.name_translations?.en || (locale === 'ar' ? 'نشاط' : 'Activity')}
         </h1>
 
         {/* Activity Type and Date */}
@@ -87,7 +87,7 @@ export default function ActivityDetail({ params }) {
             {formatDate(activity.event_date)}
           </span>
           <span className="inline-block bg-white text-gray-700 px-4 py-2 rounded-full font-medium">
-            {activity.location_translations?.en || 'Location'}
+            {activity.location_translations?.[locale] || activity.location_translations?.en || (locale === 'ar' ? 'الموقع' : 'Location')}
           </span>
         </div>
 
@@ -97,7 +97,7 @@ export default function ActivityDetail({ params }) {
             {galleryImages.length > 0 ? (
               <Image
                 src={galleryImages[currentImageIndex]}
-                alt={`${activity.name_translations?.en || 'Activity'} - Image ${currentImageIndex + 1}`}
+                alt={`${activity.name_translations?.[locale] || activity.name_translations?.en || (locale === 'ar' ? 'نشاط' : 'Activity')} - ${locale === 'ar' ? 'صورة' : 'Image'} ${currentImageIndex + 1}`}
                 fill
                 className="object-cover"
                 onError={(e) => {
@@ -106,7 +106,7 @@ export default function ActivityDetail({ params }) {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                <p className="text-gray-500">No images available</p>
+                <p className="text-gray-500">{locale === 'ar' ? 'لا توجد صور متاحة' : 'No images available'}</p>
               </div>
             )}
           </div>
@@ -117,7 +117,7 @@ export default function ActivityDetail({ params }) {
               <button
                 onClick={prevImage}
                 className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-all"
-                aria-label="Previous image"
+                aria-label={locale === 'ar' ? 'الصورة السابقة' : 'Previous image'}
               >
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -126,7 +126,7 @@ export default function ActivityDetail({ params }) {
               <button
                 onClick={nextImage}
                 className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-all"
-                aria-label="Next image"
+                aria-label={locale === 'ar' ? 'الصورة التالية' : 'Next image'}
               >
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -140,7 +140,7 @@ export default function ActivityDetail({ params }) {
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
                     className={`h-2 w-2 rounded-full transition-all ${currentImageIndex === index ? 'bg-white w-4' : 'bg-white bg-opacity-50'}`}
-                    aria-label={`Go to image ${index + 1}`}
+                    aria-label={locale === 'ar' ? `الانتقال إلى الصورة ${index + 1}` : `Go to image ${index + 1}`}
                   />
                 ))}
               </div>
@@ -150,16 +150,16 @@ export default function ActivityDetail({ params }) {
 
         {/* Activity Description */}
         <div className="bg-white p-8 rounded-xl shadow-md mb-12">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-800">About This Activity</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-gray-800">{locale === 'ar' ? 'حول هذا النشاط' : 'About This Activity'}</h2>
           <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-            {activity.description_translations?.en || 'No description available.'}
+            {activity.description_translations?.[locale] || activity.description_translations?.en || (locale === 'ar' ? 'لا يوجد وصف متاح.' : 'No description available.')}
           </p>
         </div>
 
         {/* Video Section (if available) */}
         {activity.video_url && (
           <div className="bg-white p-8 rounded-xl shadow-md mb-12">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800">Activity Video</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-gray-800">{locale === 'ar' ? 'فيديو النشاط' : 'Activity Video'}</h2>
             <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
               <iframe
                 src={activity.video_url.replace('watch?v=', 'embed/')}
@@ -175,7 +175,7 @@ export default function ActivityDetail({ params }) {
         {/* Thumbnail Gallery */}
         {galleryImages.length > 1 && (
           <div className="mt-8">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800">Gallery</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-gray-800">{locale === 'ar' ? 'معرض الصور' : 'Gallery'}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {galleryImages.map((image, index) => (
                 <div 

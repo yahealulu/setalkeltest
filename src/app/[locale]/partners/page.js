@@ -31,14 +31,18 @@ export default function PartnersPage() {
   if (error) {
     return (
       <main className="min-h-screen bg-[#faf8f5] flex items-center justify-center">
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg">Failed to load partners. Please try again later.</div>
+        <div className="bg-red-50 text-red-600 p-4 rounded-lg">
+          {locale === 'ar' ? 'فشل تحميل الشركاء. يرجى المحاولة مرة أخرى لاحقًا.' : 'Failed to load partners. Please try again later.'}
+        </div>
       </main>
     );
   }
 
   return (
     <main className="min-h-screen bg-[#faf8f5] px-4 py-10">
-      <h1 className="text-3xl md:text-4xl font-bold text-center mb-10 text-[#4c5a3c]">Our Partners</h1>
+      <h1 className="text-3xl md:text-4xl font-bold text-center mb-10 text-[#4c5a3c]">
+        {locale === 'ar' ? 'شركاؤنا' : 'Our Partners'}
+      </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {data.map((partner, idx) => (
           <motion.div

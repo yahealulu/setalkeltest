@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import Link from 'next/link';
@@ -9,6 +9,8 @@ import ProductCard from '../../../components/ProductCard';
 
 const SearchPage = () => {
     const searchParams = useSearchParams();
+    const pathname = usePathname();
+    const locale = pathname.split('/')[1] || 'en';
     const query = searchParams.get('q') || '';
     const [currentPage, setCurrentPage] = useState(1);
     const [productsPerPage] = useState(20);
@@ -42,7 +44,9 @@ const SearchPage = () => {
     if (isLoading) {
         return (
             <div className="container mx-auto px-4 py-8">
-                <h1 className="text-2xl font-bold mb-6">Search Results for "{query}"</h1>
+                <h1 className="text-2xl font-bold mb-6">
+                    {locale === 'ar' ? `نتائج البحث عن "${query}"` : `Search Results for "${query}"`}
+                </h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {[...Array(8)].map((_, index) => (
                         <div key={index} className="animate-pulse">
@@ -59,9 +63,13 @@ const SearchPage = () => {
     if (error) {
         return (
             <div className="container mx-auto px-4 py-8">
-                <h1 className="text-2xl font-bold mb-6">Search Results for "{query}"</h1>
+                <h1 className="text-2xl font-bold mb-6">
+                {locale === 'ar' ? `نتائج البحث عن "${query}"` : `Search Results for "${query}"`}
+            </h1>
                 <div className="bg-red-50 text-red-600 p-4 rounded-lg">
-                    Failed to load search results. Please try again later.
+                    {locale === 'ar' 
+                        ? 'فشل تحميل نتائج البحث. يرجى المحاولة مرة أخرى لاحقًا.' 
+                        : 'Failed to load search results. Please try again later.'}
                 </div>
             </div>
         );
@@ -72,12 +80,24 @@ const SearchPage = () => {
             <h1 className="text-2xl font-bold mb-6">Search Results for "{query}"</h1>
             
             {!query.trim() ? (
-                <div className="text-gray-500">Please enter a search term to find products.</div>
+                <div className="text-gray-500">
+                    {locale === 'ar' 
+                        ? 'يرجى إدخال مصطلح البحث للعثور على المنتجات.' 
+                        : 'Please enter a search term to find products.'}
+                </div>
             ) : products.length === 0 ? (
-                <div className="text-gray-500">No products found for "{query}".</div>
+                <div className="text-gray-500">
+                    {locale === 'ar' 
+                        ? `لم يتم العثور على منتجات لـ "${query}".` 
+                        : `No products found for "${query}".`}
+                </div>
             ) : (
                 <>
-                    <p className="text-gray-600 mb-6">{products.length} product(s) found</p>
+                    <p className="text-gray-600 mb-6">
+                        {locale === 'ar' 
+                            ? `تم العثور على ${products.length} منتج(ات)` 
+                            : `${products.length} product(s) found`}
+                    </p>
                     
                     {/* Products Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -97,7 +117,7 @@ const SearchPage = () => {
                                     disabled={currentPage === 1}
                                     className={`px-4 py-2 mx-1 rounded-md ${currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
                                 >
-                                    Previous
+                                    {locale === 'ar' ? 'السابق' : 'Previous'}
                                 </button>
 
                                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
@@ -115,7 +135,7 @@ const SearchPage = () => {
                                     disabled={currentPage === totalPages}
                                     className={`px-4 py-2 mx-1 rounded-md ${currentPage === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
                                 >
-                                    Next
+                                    {locale === 'ar' ? 'التالي' : 'Next'}
                                 </button>
                             </nav>
                         </div>

@@ -15,10 +15,12 @@ export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
 
  useEffect(() => {
-    if (!isAuthLoading && user && pathname === '/auth/login') {
-      router.push('/');
+    const currentLocale = pathname.split('/')[1] || 'en';
+    
+    if (!isAuthLoading && user && pathname.endsWith('/auth/login')) {
+      router.push(`/${currentLocale}`);
     }
-  }, [isAuthLoading, user, pathname]);
+  }, [isAuthLoading, user, pathname, router]);
 
   if (isAuthLoading) {
     return <LoadingScreen />;

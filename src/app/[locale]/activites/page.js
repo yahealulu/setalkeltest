@@ -53,7 +53,7 @@ export default function Activities() {
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-          <p className="text-red-700">Error loading activities. Please try again later.</p>
+          <p className="text-red-700">{locale === 'ar' ? 'خطأ في تحميل الأنشطة. يرجى المحاولة مرة أخرى لاحقًا.' : 'Error loading activities. Please try again later.'}</p>
         </div>
       </div>
     );
@@ -67,7 +67,7 @@ export default function Activities() {
         transition={{ duration: 0.5 }}
         className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800"
       >
-        Our Activities
+        {locale === 'ar' ? 'أنشطتنا' : 'Our Activities'}
       </motion.h1>
       
       {/* Filter tabs */}
@@ -94,7 +94,7 @@ export default function Activities() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-gray-500">No activities found.</p>
+          <p className="text-gray-500">{locale === 'ar' ? 'لم يتم العثور على أنشطة.' : 'No activities found.'}</p>
         </div>
       )}
     </div>
@@ -120,7 +120,7 @@ const ActivityCard = ({ activity, locale }) => {
         <div className="relative h-56 w-full">
           <Image
             src={`https://setalkel.amjadshbib.com/public/${activity.images}`}
-            alt={activity.name_translations?.en || 'Activity'}
+            alt={activity.name_translations?.[locale] || activity.name_translations?.en || 'Activity'}
             fill
             className="object-cover"
             onError={(e) => {
@@ -130,14 +130,14 @@ const ActivityCard = ({ activity, locale }) => {
         </div>
         <div className="p-6">
           <h3 className="text-xl font-semibold text-gray-800 mb-2">
-            {activity.name_translations?.en || 'Activity'}
+            {activity.name_translations?.[locale] || activity.name_translations?.en || (locale === 'ar' ? 'نشاط' : 'Activity')}
           </h3>
           <div className="flex items-center text-gray-600 mb-2">
             <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            <span>{activity.location_translations?.en || 'Location'}</span>
+            <span>{activity.location_translations?.[locale] || activity.location_translations?.en || (locale === 'ar' ? 'الموقع' : 'Location')}</span>
           </div>
           <div className="flex items-center text-gray-600 mb-4">
             <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -149,7 +149,7 @@ const ActivityCard = ({ activity, locale }) => {
             <span className="inline-block bg-[#f0e6d9] text-[#c8a27a] text-xs px-3 py-1 rounded-full font-medium">
               {activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}
             </span>
-            <span className="text-[#c8a27a] font-medium text-sm">View Details →</span>
+            <span className="text-[#c8a27a] font-medium text-sm">{locale === 'ar' ? 'عرض التفاصيل ←' : 'View Details →'}</span>
           </div>
         </div>
       </Link>

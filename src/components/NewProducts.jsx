@@ -6,10 +6,12 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 
 const NewProducts = () => {
   const params = useParams();
+  const pathname = usePathname();
+  const currentLocale = pathname.split('/')[1] || 'en';
   const [showAll, setShowAll] = useState(false);
 
   const { data: newProducts, error, isLoading } = useQuery({
@@ -23,7 +25,7 @@ const NewProducts = () => {
   if (isLoading) {
     return (
       <div className="px-6 py-8">
-        <h2 className="text-2xl font-semibold mb-6">New Products</h2>
+        <h2 className="text-2xl font-semibold mb-6">{currentLocale === 'ar' ? 'منتجات جديدة' : 'New Products'}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="animate-pulse bg-gray-200 rounded-2xl p-6 h-[300px]" />
@@ -36,8 +38,8 @@ const NewProducts = () => {
   if (error) {
     return (
       <div className="px-6 py-8">
-        <h2 className="text-2xl font-semibold mb-6">New Products</h2>
-        <div className="text-red-500">Error loading new products</div>
+        <h2 className="text-2xl font-semibold mb-6">{currentLocale === 'ar' ? 'منتجات جديدة' : 'New Products'}</h2>
+        <div className="text-red-500">{currentLocale === 'ar' ? 'خطأ في تحميل المنتجات الجديدة' : 'Error loading new products'}</div>
       </div>
     );
   }
@@ -45,8 +47,8 @@ const NewProducts = () => {
   if (!newProducts || newProducts?.length === 0) {
     return (
       <div className="px-6 py-8">
-        <h2 className="text-2xl font-semibold mb-6">New Products</h2>
-        <div className="text-gray-500">No new products found</div>
+        <h2 className="text-2xl font-semibold mb-6">{currentLocale === 'ar' ? 'منتجات جديدة' : 'New Products'}</h2>
+        <div className="text-gray-500">{currentLocale === 'ar' ? 'لم يتم العثور على منتجات جديدة' : 'No new products found'}</div>
       </div>
     );
   }
@@ -55,7 +57,7 @@ const NewProducts = () => {
 
   return (
     <div className="px-8 py-8">
-      <h2 className="text-2xl font-semibold mb-6">New Products</h2>
+      <h2 className="text-2xl font-semibold mb-6">{currentLocale === 'ar' ? 'منتجات جديدة' : 'New Products'}</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {displayProducts.map((product) => (
@@ -72,7 +74,7 @@ const NewProducts = () => {
                 {product.is_new && (
                   <div className="absolute top-0 left-0 z-20">
                     <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-br-lg shadow-md">
-                      New
+                      {currentLocale === 'ar' ? 'جديد' : 'New'}
                     </div>
                   </div>
                 )}
@@ -80,7 +82,7 @@ const NewProducts = () => {
                 {!product.in_stock && (
                   <div className="absolute top-0 right-0 z-20">
                     <div className="bg-red-500 text-white text-xs py-1 px-2 rounded-bl-lg shadow-md">
-                      Out of Stock
+                      {currentLocale === 'ar' ? 'نفذ من المخزون' : 'Out of Stock'}
                     </div>
                   </div>
                 )}
@@ -97,7 +99,7 @@ const NewProducts = () => {
                         : product.product?.image && product.product.image !== 'null'
                           ? `https://setalkel.amjadshbib.com/public/${product.product.image}`
                           : '/placeholder-product.jpg'}
-                      alt={product.product?.name_translations?.en || 'Product'}
+                      alt={product.product?.name_translations?.[currentLocale] || product.product?.name_translations?.en || 'Product'}
                       fill
                       className="object-cover rounded-xl"
                     />
@@ -109,15 +111,15 @@ const NewProducts = () => {
                     whileHover={{ x: 5 }}
                     transition={{ duration: 0.2 }}
                   >
-                    {product.product?.name_translations?.en}
+                    {product.product?.name_translations?.[currentLocale] || product.product?.name_translations?.en}
                   </motion.h3>
 
                   <div className="text-sm text-gray-600 mb-2">
                     {product.size && (
-                      <span className="block">Size: {product.size}</span>
+                      <span className="block">{currentLocale === 'ar' ? 'الحجم: ' : 'Size: '}{product.size}</span>
                     )}
                     {product.packaging && (
-                      <span className="block">Packaging: {product.packaging}</span>
+                      <span className="block">{currentLocale === 'ar' ? 'التعبئة: ' : 'Packaging: '}{product.packaging}</span>
                     )}
                   </div>
                 </div>
@@ -136,7 +138,7 @@ const NewProducts = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {showAll ? 'Show Less' : 'Show More'}
+            {showAll ? (currentLocale === 'ar' ? 'عرض أقل' : 'Show Less') : (currentLocale === 'ar' ? 'عرض المزيد' : 'Show More')}
           </motion.button>
         </div>
       )}

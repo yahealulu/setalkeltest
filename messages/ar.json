@@ -165,7 +165,19 @@
     "phone": "رقم الهاتف",
     "message": "الرسالة",
     "send": "إرسال"
+  },
+  "subheader": {
+    "language": "العربية",
+    "allCategories": "جميع الفئات",
+    "searchPlaceholder": "ابحث عن المنتجات",
+    "searchButton": "بحث",
+    "offers": "العروض",
+    "activities": "الأنشطة",
+    "bites": "وجبات سيت الكل"
+  },
+  "locations": {
+    "title": "مواقعنا",
+    "noLocations": "لا توجد مواقع متاحة حالياً",
+    "failedToLoad": "فشل في تحميل معلومات المواقع"
   }
-
-
 }

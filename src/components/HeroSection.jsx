@@ -3,29 +3,54 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-const slides = [
-    {
-        id: 1,
-        title: 'Get Discounts on Fresh\nVegetables & Fruits',
-        subtitle: 'Up to - 10%',
-        description: 'Discount will apply when you order ',
-        description2: 'products with\nour delivery from 11 am - 4 pm',
-        bgColor: 'bg-[#c9dbb3]',
-        image: 'https://plus.unsplash.com/premium_photo-1675798983878-604c09f6d154?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dmVnZXRhYmxlc3xlbnwwfHwwfHx8MA%3D%3D'
-    },
-    {
-        id: 2,
-        title: 'Save up 30% on\nThe Original',
-        subtitle: 'Oatly milk',
-        tag: 'Weekly Discounts',
-        bgColor: 'bg-[#F5E6D3]',
-        image: 'https://images.unsplash.com/photo-1621470626377-dd2757ae6216?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG51dHN8ZW58MHx8MHx8fDA%3D'
-    },
-
-];
+const slidesData = {
+    en: [
+        {
+            id: 1,
+            title: 'Get Discounts on Fresh\nVegetables & Fruits',
+            subtitle: 'Up to - 10%',
+            description: 'Discount will apply when you order ',
+            description2: 'products with\nour delivery from 11 am - 4 pm',
+            bgColor: 'bg-[#c9dbb3]',
+            image: 'https://plus.unsplash.com/premium_photo-1675798983878-604c09f6d154?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dmVnZXRhYmxlc3xlbnwwfHwwfHx8MA%3D%3D'
+        },
+        {
+            id: 2,
+            title: 'Save up 30% on\nThe Original',
+            subtitle: 'Oatly milk',
+            tag: 'Weekly Discounts',
+            bgColor: 'bg-[#F5E6D3]',
+            image: 'https://images.unsplash.com/photo-1621470626377-dd2757ae6216?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG51dHN8ZW58MHx8MHx8fDA%3D'
+        },
+    ],
+    ar: [
+        {
+            id: 1,
+            title: 'احصل على خصومات على\nالخضروات والفواكه الطازجة',
+            subtitle: 'تصل إلى - 10٪',
+            description: 'سيتم تطبيق الخصم عند طلب ',
+            description2: 'المنتجات مع\nخدمة التوصيل من الساعة 11 صباحًا - 4 مساءً',
+            bgColor: 'bg-[#c9dbb3]',
+            image: 'https://plus.unsplash.com/premium_photo-1675798983878-604c09f6d154?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dmVnZXRhYmxlc3xlbnwwfHwwfHx8MA%3D%3D'
+        },
+        {
+            id: 2,
+            title: 'وفر حتى 30٪ على\nالأصلي',
+            subtitle: 'حليب أوتلي',
+            tag: 'خصومات أسبوعية',
+            bgColor: 'bg-[#F5E6D3]',
+            image: 'https://images.unsplash.com/photo-1621470626377-dd2757ae6216?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG51dHN8ZW58MHx8MHx8fDA%3D'
+        },
+    ]
+};
 
 const HeroSection = () => {
+    const pathname = usePathname();
+    const currentLocale = pathname.split('/')[1] || 'en';
+    const slides = slidesData[currentLocale] || slidesData.en;
+    
     const [currentSlide, setCurrentSlide] = useState(0);
 
     const nextSlide = () => {
@@ -67,7 +92,7 @@ const HeroSection = () => {
                                             {slide.description && (
                                                 <div className="flex items-start gap-4">
                                                     <button className="bg-white mt-2 w-full text-nowrap text-gray-800 px-6 py-2 h-fit rounded-[10px] w-fit text-sm font-medium hover:bg-gray-50 transition-colors">
-                                                        Shop Now
+                                                        {currentLocale === 'ar' ? 'تسوق الآن' : 'Shop Now'}
                                                     </button>
                                                     <div>
                                                         <p className="text-sm text-nowrap text-gray-700 ">
@@ -137,13 +162,17 @@ const HeroSection = () => {
                     <div className="w-full bg-[#E3F0FF] rounded-2xl overflow-hidden group cursor-pointer">
                         <div className="p-6 h-[400px] relative text-center">
                             <div>
-                                <p className="text-sm font-semibold text-[#1e5b87]">SAVE UP TO 35% ON</p>
-                                <h3 className="text-xl font-bold text-[#1e5b87] mt-1">Energy Drinks</h3>
+                                <p className="text-sm font-semibold text-[#1e5b87]">
+                                    {currentLocale === 'ar' ? 'وفر حتى 35٪ على' : 'SAVE UP TO 35% ON'}
+                                </p>
+                                <h3 className="text-xl font-bold text-[#1e5b87] mt-1">
+                                    {currentLocale === 'ar' ? 'مشروبات الطاقة' : 'Energy Drinks'}
+                                </h3>
                                 <Link
-                                    href="/shop-now"
+                                    href={`/${currentLocale}/shop-now`}
                                     className="text-sm font-medium text-gray-600 underline text-gray-700 hover:text-gray-900 mt-2 inline-block underline-offset-4 hover:underline"
                                 >
-                                    Shop Now
+                                    {currentLocale === 'ar' ? 'تسوق الآن' : 'Shop Now'}
                                 </Link>
                             </div>
                             <div className="absolute bottom-0 left-0 right-0 h-[60%] transition-transform duration-500 group-hover:scale-110">
@@ -161,13 +190,17 @@ const HeroSection = () => {
                     <div className="w-full bg-[#FFF3E5] rounded-2xl overflow-hidden group cursor-pointer">
                         <div className="p-6 h-[400px] relative text-center">
                             <div>
-                                <p className="text-sm font-semibold text-[#966919]">GET DISCOUNT -15% ON</p>
-                                <h3 className="text-xl font-bold text-[#966919] mt-1">Plant Nuggets</h3>
+                                <p className="text-sm font-semibold text-[#966919]">
+                                    {currentLocale === 'ar' ? 'احصل على خصم -15٪ على' : 'GET DISCOUNT -15% ON'}
+                                </p>
+                                <h3 className="text-xl font-bold text-[#966919] mt-1">
+                                    {currentLocale === 'ar' ? 'ناجتس نباتي' : 'Plant Nuggets'}
+                                </h3>
                                 <Link
-                                    href="/buy-now"
+                                    href={`/${currentLocale}/buy-now`}
                                     className="text-sm font-medium text-gray-600 underline text-gray-700 hover:text-gray-900 mt-2 inline-block underline-offset-4 hover:underline"
                                 >
-                                    Buy Now
+                                    {currentLocale === 'ar' ? 'اشتر الآن' : 'Buy Now'}
                                 </Link>
                             </div>
                             <div className="absolute bottom-0 left-0 right-0 h-[70%] transition-transform duration-500 group-hover:scale-110">

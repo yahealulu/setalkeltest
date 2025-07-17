@@ -164,5 +164,19 @@
     "phone": "Phone Number",
     "message": "Message",
     "send": "Send"
+  },
+  "subheader": {
+    "language": "English",
+    "allCategories": "All Categories",
+    "searchPlaceholder": "Search for products",
+    "searchButton": "Search",
+    "offers": "Offers",
+    "activities": "Activities",
+    "bites": "SetAllel Bites"
+  },
+  "locations": {
+    "title": "Our Locations",
+    "noLocations": "No locations available at the moment",
+    "failedToLoad": "Failed to load location information"
   }
 }

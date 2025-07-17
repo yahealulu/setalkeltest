@@ -2,8 +2,11 @@
 
 import Image from "next/image";
 import { motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 const ProductCard = ({ product }) => {
+    const pathname = usePathname();
+    const currentLocale = pathname.split('/')[1] || 'en';
     return (
         <motion.div
             className="shadow-lg w-full relative bg-white mb-2 rounded-2xl overflow-hidden group h-[380px]"
@@ -15,7 +18,7 @@ const ProductCard = ({ product }) => {
             {!product.in_stock && (
                 <div className="absolute top-5 right-0 z-20">
                     <div className="bg-red-500 text-white text-xs py-1 px-4 rounded-l-full shadow-md">
-                        Out of Stock
+                        {currentLocale === 'ar' ? 'غير متوفر' : 'Out of Stock'}
                     </div>
                 </div>
             )}
@@ -24,7 +27,7 @@ const ProductCard = ({ product }) => {
             {product.is_new && (
                 <div className="absolute top-0 left-0 z-20">
                     <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-te-full shadow-md">
-                        New
+                        {currentLocale === 'ar' ? 'جديد' : 'New'}
                     </div>
                 </div>
             )}
@@ -38,7 +41,7 @@ const ProductCard = ({ product }) => {
                 >
                     <Image
                         src={product.image ? `https://setalkel.amjadshbib.com/public/${product.image}` : '/placeholder-product.jpg'}
-                        alt={product.name_translations?.en || 'Product'}
+                        alt={product.name_translations?.[currentLocale] || product.name_translations?.en || 'Product'}
                         fill
                         className="object-cover"
                         onError={(e) => {
@@ -56,13 +59,13 @@ const ProductCard = ({ product }) => {
                     whileHover={{ x: 5 }}
                     transition={{ duration: 0.2 }}
                 >
-                    {product.name_translations?.en}
+                    {product.name_translations?.[currentLocale] || product.name_translations?.en}
                 </motion.h3>
 
                 {/* Description */}
-                {product.description_translations?.en && (
+                {(product.description_translations?.[currentLocale] || product.description_translations?.en) && (
                     <p className="text-sm text-gray-500 line-clamp-2">
-                        {product.description_translations.en}
+                        {product.description_translations?.[currentLocale] || product.description_translations?.en}
                     </p>
                 )}
 
@@ -70,7 +73,7 @@ const ProductCard = ({ product }) => {
                 <div className="grid grid-cols-2 gap-2 text-sm mt-1">
                     {product.weight_unit && (
                         <div className="flex flex-col">
-                            <span className="text-gray-500">Unit</span>
+                            <span className="text-gray-500">{currentLocale === 'ar' ? 'الوحدة' : 'Unit'}</span>
                             <span className="font-medium text-gray-700 uppercase">
                                 {product.weight_unit}
                             </span>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useContext } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
@@ -15,6 +15,8 @@ import { AuthContext } from '@/context/AuthContext';
 const VariantPage = () => {
     const router = useRouter();
     const params = useParams();
+    const pathname = usePathname();
+    const currentLocale = pathname.split('/')[1];
     const [barcodeUrl, setBarcodeUrl] = useState('');
     const { user, isAuthLoading } = useContext(AuthContext);
 
@@ -88,7 +90,7 @@ const VariantPage = () => {
         return (
             <div className="container mx-auto px-4 py-8">
                 <div className="bg-red-50 text-red-600 p-4 rounded-lg">
-                    Failed to load variant details
+                    {currentLocale === 'ar' ? 'فشل تحميل تفاصيل المنتج' : 'Failed to load variant details'}
                 </div>
             </div>
         );
@@ -97,7 +99,7 @@ const VariantPage = () => {
     if (!variant) {
         return (
             <div className="container mx-auto px-4 py-8">
-                <div className="text-gray-500">Variant not found</div>
+                <div className="text-gray-500">{currentLocale === 'ar' ? 'لم يتم العثور على المنتج' : 'Variant not found'}</div>
             </div>
         );
     }
@@ -112,7 +114,7 @@ const VariantPage = () => {
                 >
                     <ArrowLeft className="w-5 h-5" />
                 </button>
-                <h1 className="text-3xl font-bold text-gray-800">Variant Details</h1>
+                <h1 className="text-3xl font-bold text-gray-800">{currentLocale === 'ar' ? 'تفاصيل المنتج' : 'Variant Details'}</h1>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -135,7 +137,7 @@ const VariantPage = () => {
                     >
                         <h2 className="text-xl font-semibold flex items-center">
                             <Barcode className="w-5 h-5 mr-2 text-indigo-600" />
-                            Barcode
+                            {currentLocale === 'ar' ? 'الباركود' : 'Barcode'}
                         </h2>
                         <div className="flex flex-col items-center justify-center p-4 bg-white rounded-lg border border-gray-200">
                             {barcodeUrl ? (
@@ -143,7 +145,7 @@ const VariantPage = () => {
                             ) : (
                                 <div className="text-gray-600 text-center">
                                     <p className="font-mono text-lg">{variant.barcode}</p>
-                                    <p className="text-sm mt-2">Barcode display unavailable</p>
+                                    <p className="text-sm mt-2">{currentLocale === 'ar' ? 'عرض الباركود غير متاح' : 'Barcode display unavailable'}</p>
                                 </div>
                             )}
                         </div>
@@ -162,7 +164,9 @@ const VariantPage = () => {
                             
                             <div className="flex flex-wrap gap-4">
                                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${variant.in_stock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                    {variant.in_stock ? 'In Stock' : 'Out of Stock'}
+                                    {variant.in_stock 
+                                        ? (currentLocale === 'ar' ? 'متوفر' : 'In Stock') 
+                                        : (currentLocale === 'ar' ? 'غير متوفر' : 'Out of Stock')}
                                 </span>
                             </div>
                         </div>
@@ -171,19 +175,19 @@ const VariantPage = () => {
                         <div className="space-y-3">
                             <h3 className="text-lg font-semibold flex items-center">
                                 <Package className="w-5 h-5 mr-2 text-indigo-600" />
-                                Packaging Information
+                                {currentLocale === 'ar' ? 'معلومات التعبئة' : 'Packaging Information'}
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
                                 <div className="space-y-1">
-                                    <p className="text-sm text-gray-500">Packaging Type</p>
+                                    <p className="text-sm text-gray-500">{currentLocale === 'ar' ? 'نوع التعبئة' : 'Packaging Type'}</p>
                                     <p className="font-medium">{variant.packaging}</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-sm text-gray-500">Box Packing</p>
+                                    <p className="text-sm text-gray-500">{currentLocale === 'ar' ? 'تعبئة الصندوق' : 'Box Packing'}</p>
                                     <p className="font-medium">{variant.box_packing}</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-sm text-gray-500">Box Dimensions</p>
+                                    <p className="text-sm text-gray-500">{currentLocale === 'ar' ? 'أبعاد الصندوق' : 'Box Dimensions'}</p>
                                     <p className="font-medium">{variant.box_dimensions}</p>
                                 </div>
                             </div>
@@ -193,23 +197,23 @@ const VariantPage = () => {
                         <div className="space-y-3">
                             <h3 className="text-lg font-semibold flex items-center">
                                 <Scale className="w-5 h-5 mr-2 text-indigo-600" />
-                                Weight Information
+                                {currentLocale === 'ar' ? 'معلومات الوزن' : 'Weight Information'}
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
                                 <div className="space-y-1">
-                                    <p className="text-sm text-gray-500">Net Weight</p>
+                                    <p className="text-sm text-gray-500">{currentLocale === 'ar' ? 'الوزن الصافي' : 'Net Weight'}</p>
                                     <p className="font-medium">{variant.net_weight} g</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-sm text-gray-500">Gross Weight</p>
+                                    <p className="text-sm text-gray-500">{currentLocale === 'ar' ? 'الوزن الإجمالي' : 'Gross Weight'}</p>
                                     <p className="font-medium">{variant.gross_weight} g</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-sm text-gray-500">Tare Weight</p>
+                                    <p className="text-sm text-gray-500">{currentLocale === 'ar' ? 'وزن الفارغ' : 'Tare Weight'}</p>
                                     <p className="font-medium">{variant.tare_weight} g</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-sm text-gray-500">Standard Weight</p>
+                                    <p className="text-sm text-gray-500">{currentLocale === 'ar' ? 'الوزن القياسي' : 'Standard Weight'}</p>
                                     <p className="font-medium">{variant.standard_weight} g</p>
                                 </div>
                             </div>
@@ -218,22 +222,22 @@ const VariantPage = () => {
                         {/* User Rating & Price (if available) */}
                         {(variant.user_rating || (user && variant.user_price)) && (
                             <div className="space-y-3">
-                                <h3 className="text-lg font-semibold">User Information</h3>
+                                <h3 className="text-lg font-semibold">{currentLocale === 'ar' ? 'معلومات المستخدم' : 'User Information'}</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
                                     {variant.user_rating && (
                                         <div className="space-y-1">
-                                            <p className="text-sm text-gray-500">User Rating</p>
+                                            <p className="text-sm text-gray-500">{currentLocale === 'ar' ? 'تقييم المستخدم' : 'User Rating'}</p>
                                             <p className="font-medium">{variant.user_rating}</p>
                                         </div>
                                     )}
                                     {user && variant.user_price && (
                                         <>
                                             <div className="space-y-1">
-                                                <p className="text-sm text-gray-500">Price Per Piece</p>
+                                                <p className="text-sm text-gray-500">{currentLocale === 'ar' ? 'السعر للقطعة' : 'Price Per Piece'}</p>
                                                 <p className="font-medium">${variant.user_price.piece_price}</p>
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-sm text-gray-500">Box Price</p>
+                                                <p className="text-sm text-gray-500">{currentLocale === 'ar' ? 'سعر الصندوق' : 'Box Price'}</p>
                                                 <p className="font-medium">${variant.user_price.box_price}</p>
                                             </div>
                                         </>
@@ -249,7 +253,7 @@ const VariantPage = () => {
                             href={`/${params.locale}/${params.product}`}
                             className="flex-1 bg-indigo-600 text-white py-3 px-6 rounded-xl font-medium hover:bg-indigo-700 transition-colors text-center"
                         >
-                            Back to Product
+                            {currentLocale === 'ar' ? 'العودة إلى المنتج' : 'Back to Product'}
                         </Link>
                     </div>
                 </div>
