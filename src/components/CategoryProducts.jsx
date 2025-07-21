@@ -154,23 +154,22 @@ const CategoryProductsSection = ({ category }) => {
 
     if (!category.products || category.products.length === 0) {
         return (
-            <div className="px-8 py-8">
-                <h2 className="text-2xl font-semibold mb-6">{category.name_translations?.[currentLocale] || category.name_translations?.en}</h2>
-                <div className="text-gray-500">{currentLocale === 'ar' ? 'لا توجد منتجات في هذه الفئة' : 'No products in this category'}</div>
+            <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">{category.name_translations?.[currentLocale] || category.name_translations?.en}</h2>
+                <div className="text-gray-500 text-center py-4">{currentLocale === 'ar' ? 'لا توجد منتجات في هذه الفئة' : 'No products in this category'}</div>
             </div>
         );
     }
 
     return (
-        <div className="px-8 py-8">
-            <h2 className="text-2xl font-semibold mb-6">{category.name_translations?.[currentLocale] || category.name_translations?.en}</h2>
+        <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
+            <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">{category.name_translations?.[currentLocale] || category.name_translations?.en}</h2>
 
             <div
                 ref={containerRef}
-                className="grid grid-cols-5 w-full overflow-x-auto hide-scrollbar gap-6 relative mb-4"
+                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full gap-3 sm:gap-4 md:gap-6 relative mb-4"
                 style={{
                     scrollBehavior: 'smooth',
-                    scrollSnapType: 'x mandatory',
                     WebkitOverflowScrolling: 'touch'
                 }}
             >

@@ -89,14 +89,14 @@ const CountriesSection = () => {
     }
 
     return (
-        <div className="relative px-8 py-8">
-            <h2 className="text-2xl font-semibold mb-6">Our Shipping Countries</h2>
+        <div className="relative px-4 sm:px-6 md:px-8 py-6 md:py-8">
+            <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">Our Shipping Countries</h2>
 
-            {/* Arrows */}
+            {/* Arrows - Hidden on small screens, visible on medium and up */}
             {canScrollLeft && (
                 <button
                     onClick={() => scrollByAmount(-300)}
-                    className="absolute left-4 top-[50%] -translate-y-1/2 z-10 bg-white shadow-md p-2 rounded-full hover:scale-110 transition-all border border-gray-200"
+                    className="hidden md:block absolute left-4 top-[50%] -translate-y-1/2 z-10 bg-white shadow-md p-2 rounded-full hover:scale-110 transition-all border border-gray-200"
                 >
                     <ChevronLeft className="w-5 h-5 text-gray-700" />
                 </button>
@@ -104,7 +104,7 @@ const CountriesSection = () => {
             {canScrollRight && (
                 <button
                     onClick={() => scrollByAmount(300)}
-                    className="absolute right-4 top-[50%] -translate-y-1/2 z-10 bg-white shadow-md p-2 rounded-full hover:scale-110 transition-all border border-gray-200"
+                    className="hidden md:block absolute right-4 top-[50%] -translate-y-1/2 z-10 bg-white shadow-md p-2 rounded-full hover:scale-110 transition-all border border-gray-200"
                 >
                     <ChevronRight className="w-5 h-5 text-gray-700" />
                 </button>
@@ -115,7 +115,7 @@ const CountriesSection = () => {
                 ref={containerRef}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                className="flex overflow-x-auto hide-scrollbar gap-6 relative mb-4"
+                className="flex overflow-x-auto hide-scrollbar gap-3 sm:gap-4 md:gap-6 relative mb-4 pb-2"
                 style={{
                     scrollBehavior: 'smooth',
                     scrollSnapType: 'x mandatory',
@@ -125,13 +125,18 @@ const CountriesSection = () => {
                 {countries.map((country) => (
                     <motion.div
                         key={country.id}
-                        className="shadow bg-white rounded-2xl p-6 cursor-pointer overflow-hidden flex-shrink-0"
-                        style={{ width: 'calc(25% - 18px)' }}
-                        whileHover={{ y: -10 }}
+                        className="shadow bg-white rounded-xl md:rounded-2xl p-3 md:p-6 cursor-pointer overflow-hidden flex-shrink-0 scroll-snap-align-start"
+                        style={{ 
+                            width: 'calc(85% - 12px)', 
+                            '@media (min-width: 640px)': { width: 'calc(50% - 16px)' },
+                            '@media (min-width: 768px)': { width: 'calc(33.333% - 16px)' },
+                            '@media (min-width: 1024px)': { width: 'calc(25% - 18px)' }
+                        }}
+                        whileHover={{ y: -5, '@media (min-width: 768px)': { y: -10 } }}
                         transition={{ duration: 0.3 }}
                     >
                         <div className="flex flex-col h-full">
-                            <div className="flex items-center gap-3 mb-2">
+                            <div className="flex items-center gap-2 md:gap-3 mb-2">
                                 <ReactFlagsSelect
                                     selected={country.code.toUpperCase()}
                                     showSelectedLabel={false}
@@ -139,9 +144,9 @@ const CountriesSection = () => {
                                     disabled
                                     className="!p-0 !w-auto !border-none menu-flags"
                                 />
-                                <h3 className="text-xl font-semibold capitalize">{country.name}</h3>
+                                <h3 className="text-base md:text-xl font-semibold capitalize truncate">{country.name}</h3>
                             </div>
-                            <div className="flex gap-4 mb-4 text-sm text-gray-600">
+                            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-3 md:mb-4 text-xs md:text-sm text-gray-600">
                                 <div className="flex items-center gap-1">
                                     <span className="font-medium">{country.categories_count}</span>
                                     <span>Categories</span>
@@ -151,23 +156,23 @@ const CountriesSection = () => {
                                     <span>Products</span>
                                 </div>
                             </div>
-                            <div className="flex gap-3 mb-6">
+                            <div className="flex flex-wrap gap-2 md:gap-3 mb-3 md:mb-6">
                                 {country.air && (
-                                    <div className="flex items-center gap-2 bg-blue-50 text-blue-600 px-3 py-2 rounded-lg">
-                                        <Plane className="w-4 h-4" />
-                                        <span className="text-sm">Air</span>
+                                    <div className="flex items-center gap-1 md:gap-2 bg-blue-50 text-blue-600 px-2 md:px-3 py-1 md:py-2 rounded-md md:rounded-lg">
+                                        <Plane className="w-3 h-3 md:w-4 md:h-4" />
+                                        <span className="text-xs md:text-sm">Air</span>
                                     </div>
                                 )}
                                 {country.sea && (
-                                    <div className="flex items-center gap-2 bg-green-50 text-green-600 px-3 py-2 rounded-lg">
-                                        <Ship className="w-4 h-4" />
-                                        <span className="text-sm">Sea</span>
+                                    <div className="flex items-center gap-1 md:gap-2 bg-green-50 text-green-600 px-2 md:px-3 py-1 md:py-2 rounded-md md:rounded-lg">
+                                        <Ship className="w-3 h-3 md:w-4 md:h-4" />
+                                        <span className="text-xs md:text-sm">Sea</span>
                                     </div>
                                 )}
                                 {country.land && (
-                                    <div className="flex items-center gap-2 bg-orange-50 text-orange-600 px-3 py-2 rounded-lg">
-                                        <Truck className="w-4 h-4" />
-                                        <span className="text-sm">Land</span>
+                                    <div className="flex items-center gap-1 md:gap-2 bg-orange-50 text-orange-600 px-2 md:px-3 py-1 md:py-2 rounded-md md:rounded-lg">
+                                        <Truck className="w-3 h-3 md:w-4 md:h-4" />
+                                        <span className="text-xs md:text-sm">Land</span>
                                     </div>
                                 )}
                             </div>
@@ -216,6 +221,15 @@ const CountriesSection = () => {
                 }
                 .menu-flags .ReactFlagsSelect-module_flagsSelect__2pfa2 {
                     padding: 0 !important;
+                }
+                .scroll-snap-align-start {
+                    scroll-snap-align: start;
+                }
+                @media (max-width: 639px) {
+                    .ReactFlagsSelect-module_selectFlag__2q5gC img {
+                        width: 20px !important;
+                        height: auto !important;
+                    }
                 }
             `}</style>
         </div>

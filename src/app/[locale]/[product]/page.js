@@ -141,7 +141,7 @@ const ProductPage = ({ params }) => {
 
     if (productLoading) {
         return (
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
                 <div className="animate-pulse">
                     <div className="h-64 bg-gray-200 rounded-lg mb-4" />
                     <div className="h-8 bg-gray-200 rounded w-1/2 mb-4" />
@@ -178,12 +178,12 @@ const ProductPage = ({ params }) => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <div className="bg-white rounded-3xl shadow-sm p-8 mb-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="bg-white rounded-xl sm:rounded-3xl shadow-sm p-4 sm:p-6 md:p-8 mb-6 sm:mb-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
                     {/* Left Column - Image and Variants */}
                     <div className="space-y-8">
                         {/* Main Product Image */}
-                        <div className="relative h-[500px] bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                        <div className="relative h-[300px] sm:h-[400px] md:h-[500px] bg-gray-50 rounded-lg sm:rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
                             <AnimatePresence mode="wait">
                                 <motion.div 
                                     key={selectedVariant?.id || 'product'}
@@ -218,18 +218,18 @@ const ProductPage = ({ params }) => {
                         {/* Variant Selection */}
                         {variants?.length > 0 && (
                             <div className="space-y-4">
-                                <h3 className="text-lg font-semibold text-gray-800">
+                                <h3 className="text-base sm:text-lg font-semibold text-gray-800">
                                     {locale === 'ar' ? 'المتغيرات المتاحة' : 'Available Variants'}
                                 </h3>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
                                     {/* Main Product Image Button */}
                                     <button
                                         onClick={() => setSelectedVariant(null)}
-                                        className={`relative p-3 rounded-xl border-2 transition-all ${!selectedVariant 
+                                        className={`relative p-2 sm:p-3 rounded-lg sm:rounded-xl border-2 transition-all ${!selectedVariant 
                                             ? 'border-blue-500 bg-blue-50' 
                                             : 'border-gray-200 hover:border-blue-300 bg-white'}`}
                                     >
-                                        <div className="relative h-16 mb-2">
+                                        <div className="relative h-12 sm:h-16 mb-1 sm:mb-2">
                                             <Image
                                                 src={`https://setalkel.amjadshbib.com/public/${product?.image}`}
                                                 alt={product?.name_translations?.en || 'Product'}
@@ -237,7 +237,7 @@ const ProductPage = ({ params }) => {
                                                 className="object-contain"
                                             />
                                         </div>
-                                        <p className="text-sm font-medium text-center truncate">
+                                        <p className="text-xs sm:text-sm font-medium text-center truncate">
                                             {locale === 'ar' ? 'المنتج الرئيسي' : 'Main Product'}
                                         </p>
                                         {!selectedVariant && (
@@ -250,11 +250,11 @@ const ProductPage = ({ params }) => {
                                         <button
                                             key={variant.id}
                                             onClick={() => setSelectedVariant(variant)}
-                                            className={`relative p-3 rounded-xl border-2 transition-all ${selectedVariant?.id === variant.id 
+                                            className={`relative p-2 sm:p-3 rounded-lg sm:rounded-xl border-2 transition-all ${selectedVariant?.id === variant.id 
                                                 ? 'border-blue-500 bg-blue-50' 
                                                 : 'border-gray-200 hover:border-blue-300 bg-white'}`}
                                         >
-                                            <div className="relative h-16 mb-2">
+                                            <div className="relative h-12 sm:h-16 mb-1 sm:mb-2">
                                                 <Image
                                                     src={`https://setalkel.amjadshbib.com/public/${variant.image}`}
                                                     alt={`${product?.name_translations?.en} - ${variant.size}`}
@@ -262,7 +262,7 @@ const ProductPage = ({ params }) => {
                                                     className="object-contain"
                                                 />
                                             </div>
-                                            <p className="text-sm font-medium text-center truncate">{variant.size}</p>
+                                            <p className="text-xs sm:text-sm font-medium text-center truncate">{variant.size}</p>
                                             {selectedVariant?.id === variant.id && (
                                                 <CheckCircle className="absolute top-2 right-2 w-4 h-4 text-blue-500" />
                                             )}
@@ -276,32 +276,32 @@ const ProductPage = ({ params }) => {
                     {/* Right Column - Details */}
                     <div className="space-y-8">
                         <div className="space-y-4">
-                            <h1 className="text-3xl font-bold text-gray-900">
+                            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
                                 {selectedVariant 
                                     ? `${product?.name_translations?.en} - ${selectedVariant.size}` 
                                     : product?.name_translations?.en}
                             </h1>
                             
-                            <div className="flex items-center gap-2 text-gray-600">
+                            <div className="flex items-center gap-1 sm:gap-2 text-gray-600 text-sm sm:text-base">
                                 <Tag className="w-4 h-4" />
                                 <span>{locale === 'ar' ? `رمز المنتج: ${product?.product_code}` : `Product Code: ${product?.product_code}`}</span>
                             </div>
                             
                             {product?.description_translations?.en && (
-                                <p className="text-gray-600 text-lg">
+                                <p className="text-gray-600 text-sm sm:text-base md:text-lg">
                                     {product.description_translations.en}
                                 </p>
                             )}
                         </div>
 
                         <div className="flex flex-wrap gap-3">
-                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${(selectedVariant?.in_stock || product?.in_stock) ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${(selectedVariant?.in_stock || product?.in_stock) ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                                 {(selectedVariant?.in_stock || product?.in_stock) 
                                     ? (locale === 'ar' ? 'متوفر في المخزون' : 'In Stock') 
                                     : (locale === 'ar' ? 'غير متوفر في المخزون' : 'Out of Stock')}
                             </span>
                             {product?.is_new && (
-                                <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-medium">
+                                <span className="bg-green-100 text-green-600 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
                                     {locale === 'ar' ? 'جديد' : 'New'}
                                 </span>
                             )}
@@ -317,16 +317,16 @@ const ProductPage = ({ params }) => {
                                         animate={{ opacity: 1, y: 0 }}
                                         className="bg-blue-50 border border-blue-100 rounded-xl p-4 space-y-3"
                                     >
-                                        <h3 className="text-lg font-semibold text-blue-800">
+                                        <h3 className="text-base sm:text-lg font-semibold text-blue-800">
                                             {locale === 'ar' ? 'التسعير' : 'Pricing'}
                                         </h3>
-                                        <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-2 gap-2 sm:gap-4">
                                             {variantDetails.user_price.piece_price && (
                                                 <div className="bg-white rounded-lg p-3 shadow-sm">
-                                                    <p className="text-sm text-gray-500">
+                                                    <p className="text-xs sm:text-sm text-gray-500">
                                                         {locale === 'ar' ? 'السعر لكل قطعة' : 'Price Per Piece'}
                                                     </p>
-                                                    <p className="text-xl font-bold text-blue-600">${variantDetails.user_price.piece_price}</p>
+                                                    <p className="text-lg sm:text-xl font-bold text-blue-600">${variantDetails.user_price.piece_price}</p>
                                                 </div>
                                             )}
                                             {variantDetails.user_price.box_price && (
@@ -343,11 +343,11 @@ const ProductPage = ({ params }) => {
                                 
                                 {/* Packaging Information */}
                                 <div className="space-y-3">
-                                    <h3 className="text-lg font-semibold flex items-center">
+                                    <h3 className="text-base sm:text-lg font-semibold flex items-center">
                                         <Package className="w-5 h-5 mr-2 text-indigo-600" />
                                         {locale === 'ar' ? 'معلومات التعبئة والتغليف' : 'Packaging Information'}
                                     </h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
                                         <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
                                             <p className="text-sm text-gray-500">
                                                 {locale === 'ar' ? 'نوع التعبئة' : 'Packaging Type'}
@@ -375,7 +375,7 @@ const ProductPage = ({ params }) => {
                                         <Scale className="w-5 h-5 mr-2 text-indigo-600" />
                                         {locale === 'ar' ? 'معلومات الوزن' : 'Weight Information'}
                                     </h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                                         <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
                                             <p className="text-sm text-gray-500">
                                                 {locale === 'ar' ? 'الوزن الصافي' : 'Net Weight'}
@@ -435,9 +435,9 @@ const ProductPage = ({ params }) => {
 
             {/* Related Products Section with Arrows */}
             {relatedProducts?.length > 0 && (
-                <div className="bg-white rounded-3xl shadow-sm p-8 mt-8">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-semibold">
+                <div className="bg-white rounded-xl sm:rounded-3xl shadow-sm p-4 sm:p-6 md:p-8 mt-6 sm:mt-8">
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
+                        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold">
                             {locale === 'ar' ? 'منتجات ذات صلة' : 'Related Products'}
                         </h2>
                         <div className="flex space-x-2">
@@ -468,14 +468,14 @@ const ProductPage = ({ params }) => {
                                 <Link 
                                     href={`/${resolvedParams.locale}/${relatedProduct.id}`} 
                                     key={relatedProduct.id}
-                                    className="block flex-shrink-0 w-[280px]"
+                                    className="block flex-shrink-0 w-[200px] sm:w-[240px] md:w-[280px]"
                                 >
                                     <motion.div 
                                         className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden h-full"
                                         whileHover={{ y: -5 }}
                                         transition={{ type: "spring", stiffness: 300 }}
                                     >
-                                        <div className="relative h-48">
+                                        <div className="relative h-32 sm:h-40 md:h-48">
                                             {relatedProduct.image ? (
                                                 <Image
                                                     src={`https://setalkel.amjadshbib.com/public/${relatedProduct.image}`}
@@ -498,25 +498,25 @@ const ProductPage = ({ params }) => {
                                             )}
                                         </div>
                                         <div className="p-4 space-y-3">
-                                            <h3 className="text-lg font-medium text-gray-900 line-clamp-2">
+                                            <h3 className="text-base sm:text-lg font-medium text-gray-900 line-clamp-2">
                                                 {relatedProduct.name_translations?.en || 'Product Name'}
                                             </h3>
-                                            <p className="text-sm text-gray-600 line-clamp-2">
+                                            <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
                                                 {relatedProduct.description_translations?.en || ''}
                                             </p>
                                             <div className="flex flex-wrap gap-2 mt-2">
                                                 {relatedProduct.product_code && (
-                                                    <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                                    <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
                                                         {relatedProduct.product_code}
                                                     </span>
                                                 )}
-                                                <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${relatedProduct.in_stock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                                <span className={`inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs font-medium ${relatedProduct.in_stock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                                                     {relatedProduct.in_stock 
                                                         ? (locale === 'ar' ? 'متوفر في المخزون' : 'In Stock') 
                                                         : (locale === 'ar' ? 'غير متوفر في المخزون' : 'Out of Stock')}
                                                 </span>
                                             </div>
-                                            <div className="flex items-center justify-center py-2 px-4 rounded-lg text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white transition-colors duration-200 mt-4">
+                                            <div className="flex items-center justify-center py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg text-xs sm:text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white transition-colors duration-200 mt-3 sm:mt-4">
                                                 {locale === 'ar' ? 'عرض المنتج' : 'View Product'}
                                             </div>
                                         </div>

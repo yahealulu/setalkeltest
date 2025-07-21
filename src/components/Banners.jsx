@@ -18,6 +18,8 @@ const extractYouTubeVideoId = (url) => {
 };
 
 const Banners = () => {
+  // State for tracking if the banner is being hovered (for desktop enhancements)
+  const [isHovered, setIsHovered] = useState(false);
   const [banners, setBanners] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [key, setKey] = useState(0);
@@ -66,7 +68,17 @@ const Banners = () => {
   };
 
   if (banners.length === 0) {
-    return <div className="text-center py-10">Loading banners...</div>;
+    return (
+      <div className="mx-auto max-w-screen-2xl px-0 sm:px-2 md:px-4 mb-6">
+        <div className="w-full rounded-lg overflow-hidden shadow-lg bg-gray-100">
+          <div className="relative w-full overflow-hidden" style={{ paddingTop: 'calc(1000 / 3000 * 100%)' }}>
+            <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-gray-200 animate-pulse">
+              <div className="text-gray-500 font-medium">Loading banners...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const current = banners[currentIndex];
@@ -80,7 +92,12 @@ const Banners = () => {
     : null;
 
   return (
-    <div className="relative w-full h-64 md:h-96 rounded-lg overflow-hidden shadow-lg bg-black">
+    <div className="mx-auto max-w-screen-2xl px-0 sm:px-2 md:px-4 mb-6">
+      <div 
+        className="relative w-full rounded-lg overflow-hidden shadow-lg bg-black"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
       <AnimatePresence mode="wait">
         <motion.div
           key={key}
@@ -90,13 +107,23 @@ const Banners = () => {
           transition={{ duration: 0.8 }}
           className="w-full h-full"
         >
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt={`Banner ${current.id}`}
-              className="w-full h-full object-cover"
-            />
-          ) : videoUrl ? (
+         {imageUrl ? (
+  <div className="relative w-full overflow-hidden" style={{ paddingTop: 'calc(1000 / 3000 * 100%)' }}>
+    <img
+      src={imageUrl}
+      alt={`Banner ${current.id}`}
+      className="absolute top-0 left-0 w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105"
+      loading="eager"
+      onError={(e) => {
+        console.error('Error loading banner image:', e);
+        e.target.onerror = null;
+        e.target.src = 'https://via.placeholder.com/3000x1000?text=Banner+Image+Not+Available';
+      }}
+    />
+    {/* Add a subtle overlay for better text visibility if needed */}
+    <div className="absolute inset-0 bg-black bg-opacity-10"></div>
+  </div>
+) : videoUrl ? (
             <iframe
               src={videoUrl}
               title={`YouTube video ${videoId}`}
@@ -113,35 +140,56 @@ const Banners = () => {
         </motion.div>
       </AnimatePresence>
 
-      {/* Arrows */}
+      {/* Arrows - Enhanced for better visibility */}
       <button
         onClick={handlePrev}
-        className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-40 text-white p-2 rounded-full shadow-md transition-all duration-300"
+        className="absolute left-3 md:left-5 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-30 hover:bg-opacity-50 text-white p-1.5 md:p-3 rounded-full shadow-lg transition-all duration-300 z-10"
+        aria-label="Previous banner"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
+          className="h-5 w-5 md:h-6 md:w-6"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          strokeWidth={2.5}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
       </button>
       <button
         onClick={handleNext}
-        className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-40 text-white p-2 rounded-full shadow-md transition-all duration-300"
+        className="absolute right-3 md:right-5 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-30 hover:bg-opacity-50 text-white p-1.5 md:p-3 rounded-full shadow-lg transition-all duration-300 z-10"
+        aria-label="Next banner"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
+          className="h-5 w-5 md:h-6 md:w-6"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          strokeWidth={2.5}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </button>
+      
+      {/* Banner Indicators */}
+      <div className="absolute bottom-3 left-0 right-0 flex justify-center space-x-2 z-10">
+        {banners.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => {
+              clearTimeout(timerRef.current);
+              setCurrentIndex(index);
+              setKey((prev) => prev + 1);
+            }}
+            className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-300 ${index === currentIndex ? 'bg-white scale-110' : 'bg-white bg-opacity-50 hover:bg-opacity-75'}`}
+            aria-label={`Go to banner ${index + 1}`}
+          />
+        ))}
+      </div>
+      </div>
     </div>
   );
 };

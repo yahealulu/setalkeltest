@@ -2,7 +2,20 @@
   "header": {
     "days": "Sunday - Thursday",
     "start": "8:00 AM",
-    "end": "4:00 PM"
+    "end": "4:00 PM",
+    "logout": "Logout"
+  },
+  "countries": {
+    "title": "Our Shipping Countries",
+    "subtitle": "We deliver to multiple destinations worldwide",
+    "categories": "Categories",
+    "products": "Products",
+    "air": "Air",
+    "sea": "Sea",
+    "land": "Land",
+    "viewAll": "View All Countries",
+    "loading": "Loading countries...",
+    "error": "Error loading countries."
   },
   "header2": {
     "home": "Home",

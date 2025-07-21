@@ -24,11 +24,17 @@ const NewProducts = () => {
 
   if (isLoading) {
     return (
-      <div className="px-6 py-8">
-        <h2 className="text-2xl font-semibold mb-6">{currentLocale === 'ar' ? 'منتجات جديدة' : 'New Products'}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="px-4 sm:px-6 md:px-8 py-6 md:py-8">
+        <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">{currentLocale === 'ar' ? 'منتجات جديدة' : 'New Products'}</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="animate-pulse bg-gray-200 rounded-2xl p-6 h-[300px]" />
+            <div key={i} className="animate-pulse bg-gray-200 rounded-xl md:rounded-2xl overflow-hidden">
+              <div className="aspect-square w-full bg-gray-300"></div>
+              <div className="p-3">
+                <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -37,8 +43,8 @@ const NewProducts = () => {
 
   if (error) {
     return (
-      <div className="px-6 py-8">
-        <h2 className="text-2xl font-semibold mb-6">{currentLocale === 'ar' ? 'منتجات جديدة' : 'New Products'}</h2>
+      <div className="px-4 sm:px-6 md:px-8 py-6 md:py-8">
+        <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">{currentLocale === 'ar' ? 'منتجات جديدة' : 'New Products'}</h2>
         <div className="text-red-500">{currentLocale === 'ar' ? 'خطأ في تحميل المنتجات الجديدة' : 'Error loading new products'}</div>
       </div>
     );
@@ -46,8 +52,8 @@ const NewProducts = () => {
 
   if (!newProducts || newProducts?.length === 0) {
     return (
-      <div className="px-6 py-8">
-        <h2 className="text-2xl font-semibold mb-6">{currentLocale === 'ar' ? 'منتجات جديدة' : 'New Products'}</h2>
+      <div className="px-4 sm:px-6 md:px-8 py-6 md:py-8">
+        <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">{currentLocale === 'ar' ? 'منتجات جديدة' : 'New Products'}</h2>
         <div className="text-gray-500">{currentLocale === 'ar' ? 'لم يتم العثور على منتجات جديدة' : 'No new products found'}</div>
       </div>
     );
@@ -56,42 +62,28 @@ const NewProducts = () => {
   const displayProducts = showAll ? newProducts : newProducts.slice(0, 4);
 
   return (
-    <div className="px-8 py-8">
-      <h2 className="text-2xl font-semibold mb-6">{currentLocale === 'ar' ? 'منتجات جديدة' : 'New Products'}</h2>
+    <div className="px-4 sm:px-6 md:px-8 py-6 md:py-8">
+      <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">{currentLocale === 'ar' ? 'منتجات جديدة' : 'New Products'}</h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
         {displayProducts.map((product) => (
           <Link
             key={product.id}
             href={`/${params?.locale || 'en'}/${product.product_id}/${product.id}`}
           >
             <motion.div
-              className="shadow bg-white rounded-2xl p-6 cursor-pointer overflow-hidden h-full"
-              whileHover={{ y: -10 }}
+              className="shadow bg-white rounded-xl md:rounded-2xl overflow-hidden h-full cursor-pointer"
+              whileHover={{ y: -5 }}
+              whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.3 }}
             >
               <div className="relative h-full flex flex-col">
-                {product.is_new && (
-                  <div className="absolute top-0 left-0 z-20">
-                    <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-br-lg shadow-md">
-                      {currentLocale === 'ar' ? 'جديد' : 'New'}
-                    </div>
-                  </div>
-                )}
-
-                {!product.in_stock && (
-                  <div className="absolute top-0 right-0 z-20">
-                    <div className="bg-red-500 text-white text-xs py-1 px-2 rounded-bl-lg shadow-md">
-                      {currentLocale === 'ar' ? 'نفذ من المخزون' : 'Out of Stock'}
-                    </div>
-                  </div>
-                )}
-
-                <div className="relative w-full h-32 mb-4">
+                {/* Image Container with Gradient Overlay */}
+                <div className="relative w-full aspect-square overflow-hidden">
                   <motion.div
-                    className="absolute inset-0"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.3 }}
+                    className="absolute inset-0 z-10"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.5 }}
                   >
                     <Image
                       src={product.image && product.image !== 'null'
@@ -101,25 +93,52 @@ const NewProducts = () => {
                           : '/placeholder-product.jpg'}
                       alt={product.product?.name_translations?.[currentLocale] || product.product?.name_translations?.en || 'Product'}
                       fill
-                      className="object-cover rounded-xl"
+                      className="object-cover"
                     />
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
                   </motion.div>
+                  
+                  {/* Badges */}
+                  <div className="absolute top-2 left-2 right-2 flex justify-between z-20">
+                    {product.is_new && (
+                      <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-md shadow-md">
+                        {currentLocale === 'ar' ? 'جديد' : 'New'}
+                      </div>
+                    )}
+                    {!product.in_stock && (
+                      <div className="bg-red-500 text-white text-xs py-1 px-2 rounded-md shadow-md ml-auto">
+                        {currentLocale === 'ar' ? 'نفذ من المخزون' : 'Out of Stock'}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Product name overlay on image */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3 z-20">
+                    <motion.h3
+                      className="text-white font-semibold text-sm md:text-base line-clamp-2"
+                      whileHover={{ x: 3 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {product.product?.name_translations?.[currentLocale] || product.product?.name_translations?.en}
+                    </motion.h3>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <motion.h3
-                    className="text-lg font-semibold mb-2"
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {product.product?.name_translations?.[currentLocale] || product.product?.name_translations?.en}
-                  </motion.h3>
-
-                  <div className="text-sm text-gray-600 mb-2">
+                
+                {/* Product details */}
+                <div className="p-3 flex-1 bg-white">
+                  <div className="text-xs md:text-sm text-gray-700">
                     {product.size && (
-                      <span className="block">{currentLocale === 'ar' ? 'الحجم: ' : 'Size: '}{product.size}</span>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-medium">{currentLocale === 'ar' ? 'الحجم:' : 'Size:'}</span>
+                        <span>{product.size}</span>
+                      </div>
                     )}
                     {product.packaging && (
-                      <span className="block">{currentLocale === 'ar' ? 'التعبئة: ' : 'Packaging: '}{product.packaging}</span>
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">{currentLocale === 'ar' ? 'التعبئة:' : 'Packaging:'}</span>
+                        <span>{product.packaging}</span>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -131,10 +150,10 @@ const NewProducts = () => {
 
       {/* Show More / Show Less Button */}
       {newProducts.length > 4 && (
-        <div className="flex justify-center mt-8">
+        <div className="flex justify-center mt-6 md:mt-8">
           <motion.button
             onClick={() => setShowAll(!showAll)}
-            className="px-6 py-2 bg-[#00B207] text-white rounded-full hover:bg-[#009706] transition-colors"
+            className="px-4 md:px-6 py-2 bg-[#00B207] text-white text-sm md:text-base rounded-full hover:bg-[#009706] transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
